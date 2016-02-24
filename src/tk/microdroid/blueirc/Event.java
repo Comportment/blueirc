@@ -5,6 +5,7 @@ package tk.microdroid.blueirc;
  * Events may NOT be INVITE or PRIVMSG, or whatever that can be parsed through the
  * Arguments of DATA_RECEIVED.
  * 
+ * @see IEventHandler
  */
 public enum Event {
     CONNECTED, DISCONNECTED, TIMEOUT, UNKNOWN_HOST, UNKNOWN_ERROR,

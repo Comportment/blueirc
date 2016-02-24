@@ -22,7 +22,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 /**
- * This is the heart of this library, each instance of {@code Worker}
+ * This is the heart of this library, each instance of {@code Worker}.
  * Represents a whole instance of this library, each {@code Worker} is independent
  * Of another, you can run multiple instances of {@code Worker} at once.
  * 
@@ -33,7 +33,9 @@ import javax.net.ssl.X509TrustManager;
  * Everything is managed here, all the other classes are containers of helpers, however,
  * I think this should be split into multiple classes.
  * 
- * 
+ * @see IO
+ * @see Parser
+ * @see IEventHandler
  * 
  */
 public class Worker {
@@ -99,10 +101,10 @@ public class Worker {
 	}
 
 	/**
-	 * This runnable is created and ran upon {@link #start()}
+	 * This runnable is created and ran upon {@link #start()}.
 	 *
 	 * This runnable connects, maintains, manages and handles the IRC
-	 * Commands of the IRC server
+	 * Commands of the IRC server.
 	 */
 	class IRCWorkerRunnable implements Runnable {
 		@Override

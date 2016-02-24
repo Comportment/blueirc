@@ -8,6 +8,8 @@ import java.util.List;
  * Contains informations about a user, well, it doesn't contain a lot for now
  * But it's meant to be improved to have more informations about the user.
  *
+ * @see Channel
+ * 
  */
 public class User {
 	static int bufferLength = Integer.MAX_VALUE;

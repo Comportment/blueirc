@@ -8,7 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * A message, a new UID is generated and returned from {@link Worker#send(String)}.
  * When an event such as DATA_SEND_FAILED or DATA_SENT are fired, arguments are
  * An instance of {@code Message}, this way you get the ID back and match it with
- *
+ * 
+ * @see Worker#send(String)
+ * @see Worker.writingThread
  */
 public class Message {
 	private final static AtomicInteger idGenerator = new AtomicInteger(0);

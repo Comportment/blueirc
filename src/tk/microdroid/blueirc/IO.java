@@ -15,6 +15,10 @@ import javax.net.ssl.SSLSocket;
  * Contains helper methods for safe and easier IRC command sending
  * An instance of {@code IO} is created upon {@code Socket} creation
  * in {@code Worker}
+ * 
+ * @see Worker#send(String)
+ * @see Worker.socket
+ * @see Worker.sslSocket
  */
 public class IO {
     BufferedWriter writer;

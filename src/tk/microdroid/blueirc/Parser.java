@@ -13,7 +13,8 @@ import java.util.regex.Pattern;
  * 
  * @see User
  * @see Channel
- *
+ * @see MessageType
+ * 
  */
 public class Parser {
 	public MessageType type;
