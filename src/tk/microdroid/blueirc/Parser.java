@@ -4,7 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-// Sorry if the code looks ugly, make a pull request if it can be improved :)
+/**
+ * {@code Parser} holds a received IRC command and parses it internally.
+ * A {@code Parser} parses the IRC command in the constructor itself.
+ * {@code Parser} instances are passed internally in this library, rather
+ * Than the raw IRC command, User and Channel messages {@code ArrayList} stores
+ * Instances of {@code Parser} hmm
+ * 
+ * @see User
+ * @see Channel
+ *
+ */
 public class Parser {
 	public MessageType type;
 	public boolean failed = false;

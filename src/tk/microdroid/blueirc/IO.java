@@ -10,7 +10,12 @@ import java.nio.charset.Charset;
 
 import javax.net.ssl.SSLSocket;
 
-
+/**
+ * {@code IO} manages I/O for the IRC connection.
+ * Contains helper methods for safe and easier IRC command sending
+ * An instance of {@code IO} is created upon {@code Socket} creation
+ * in {@code Worker}
+ */
 public class IO {
     BufferedWriter writer;
     BufferedReader reader;

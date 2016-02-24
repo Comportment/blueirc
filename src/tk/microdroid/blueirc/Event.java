@@ -1,5 +1,11 @@
 package tk.microdroid.blueirc;
 
+/**
+ * Events are a way to notify the user of this library about various changes and updates
+ * Events may NOT be INVITE or PRIVMSG, or whatever that can be parsed through the
+ * Arguments of DATA_RECEIVED.
+ * 
+ */
 public enum Event {
     CONNECTED, DISCONNECTED, TIMEOUT, UNKNOWN_HOST, UNKNOWN_ERROR,
     DATA_SEND_FAIL, DATA_RECEIVED, DATA_SENT, IRCV3_CAPABILITY_REJECTED,

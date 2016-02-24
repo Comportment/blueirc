@@ -1,5 +1,13 @@
 package tk.microdroid.blueirc;
 
+/**
+ * Simply, an event handler for {@code Event}s
+ * Whenever one of the {@code Event}s occur, onEvent is fired, with {@code event}
+ * As the {@code Event}, and {@code args}, as the event arguments,
+ * {@code args}'s type can be different depending on {@code event}
+ * 
+ * See the reference below, it's also on the wiki on Github
+ */
 public interface IEventHandler {
     public void onEvent(Event event, Object args);
     

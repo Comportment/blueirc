@@ -7,6 +7,16 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * {@code Channel} simply represents an IRC channel
+ * Each instance of {@code Channel} should represent an IRC channel, 
+ * {@code Channel} contains everything a user needs to know about a channel
+ * It contains Channel messages, users, the topic, join/last join dates, and
+ * The name of the channel, the one passed from the constructor.
+ * 
+ * {@code Channel} instances are stored in an {@code ArrayList} in {@code Worker}.
+ * 
+ */
 public class Channel {
 	static int bufferLength = Integer.MAX_VALUE;
 	private String name;

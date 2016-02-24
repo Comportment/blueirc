@@ -21,6 +21,21 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+/**
+ * This is the heart of this library, each instance of {@code Worker}
+ * Represents a whole instance of this library, each {@code Worker} is independent
+ * Of another, you can run multiple instances of {@code Worker} at once.
+ * 
+ * You create an instance by passing server connection informations, informations are
+ * NOT validated, you MUST validate the informations before creating an instance of {@code Worker}.
+ *
+ * Each {@code Worker} runs two {@code Threads}, one main thread and one for writing.
+ * Everything is managed here, all the other classes are containers of helpers, however,
+ * I think this should be split into multiple classes.
+ * 
+ * 
+ * 
+ */
 public class Worker {
 	private final static AtomicInteger idGen = new AtomicInteger(0);
 
@@ -83,6 +98,12 @@ public class Worker {
 		mainThread.start();
 	}
 
+	/**
+	 * This runnable is created and ran upon {@link #start()}
+	 *
+	 * This runnable connects, maintains, manages and handles the IRC
+	 * Commands of the IRC server
+	 */
 	class IRCWorkerRunnable implements Runnable {
 		@Override
 		public void run() {
@@ -359,7 +380,8 @@ public class Worker {
 	
 	/**
 	 * Sets an event handler.
-	 * This is the heart of BlueIRC, you set your own defined handler here
+	 * In most, if not all, cases you'd create your own implementation of
+	 * {@code IEventHandler}, to handle events fired
 	 * 
 	 * @param handler The events handler
 	 */

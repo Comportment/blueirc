@@ -3,6 +3,12 @@ package tk.microdroid.blueirc;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents an IRC user.
+ * Contains informations about a user, well, it doesn't contain a lot for now
+ * But it's meant to be improved to have more informations about the user.
+ *
+ */
 public class User {
 	static int bufferLength = Integer.MAX_VALUE;
 	private String nick;
