@@ -10,6 +10,7 @@ package tk.microdroid.blueirc;
  * 
  * @see Event
  * @see Example
+ * 
  */
 public interface IEventHandler {
     public void onEvent(Event event, Object args);

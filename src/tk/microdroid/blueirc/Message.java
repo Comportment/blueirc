@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 
  * @see Worker#send(String)
  * @see Worker.writingThread
+ * 
  */
 public class Message {
 	private final static AtomicInteger idGenerator = new AtomicInteger(0);

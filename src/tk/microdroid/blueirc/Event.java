@@ -6,6 +6,7 @@ package tk.microdroid.blueirc;
  * Arguments of DATA_RECEIVED.
  * 
  * @see IEventHandler
+ * 
  */
 public enum Event {
     CONNECTED, DISCONNECTED, TIMEOUT, UNKNOWN_HOST, UNKNOWN_ERROR,

@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
  * @see Event.LEFT_CHANNEL
  * @see Worker.chans
  * @see Worker.preserveChannels
+ * 
  */
 public class Channel {
 	static int bufferLength = Integer.MAX_VALUE;
