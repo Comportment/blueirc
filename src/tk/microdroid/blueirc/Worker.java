@@ -217,6 +217,13 @@ public class Worker {
 						} else {
 							chans.get(p.actionArgs.get(0)).removeUser(p.nick);
 						}
+					} else if (p.action.equals("NICK")) { // Update nicknames upon nicknames change
+						if (p.msg.equals(serverInfo.nick))
+							serverInfo.nick = p.msg;
+						for (Channel chan : chans.values())
+							for (User user : chan.getUsers().values())
+								if (user.getNick().equals(p.msg))
+									user.updateNick(p.msg);
 					} else if (p.action.equals("KICK")) { // Remove channel (If not preserving them) or user in channel
 						if (p.actionArgs.get(1).equals(
 								usingSecondNick ? serverInfo.secondNick

@@ -62,4 +62,13 @@ public class User {
 	public List<Parser> getMessages() {
 		return messages;
 	}
+	
+	/**
+	 * Update the user nick
+	 * 
+	 * @param nick The new nickname
+	 */
+	public void updateNick(String nick) {
+		this.nick = nick;
+	}
 }
