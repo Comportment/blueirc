@@ -1,7 +1,7 @@
 # BlueIRC
 An event-based IRCv3.2 library
 
-Canary branch contains development code while Master branch contains stable code
+Development branch contains development code while Master branch contains stable code
 I am always online on IRC, at irc.freenode.net, in #blueirc channel
 
 # Contributions

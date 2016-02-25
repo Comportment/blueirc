@@ -172,7 +172,8 @@ public class Worker {
 						finishedLagMeasurement = true;
 						lag = System.currentTimeMillis() - lagStart;
 						eventHandler.onEvent(Event.LAG_MEASURED, lag);
-					} else if (p.action.equals("PRIVMSG") && p.actionArgs.get(0).startsWith("#")) { // Add new message to chan and user
+					} else if (p.action.equals("PRIVMSG") 
+							&& (p.actionArgs.get(0).matches("[\\#\\&].+"))) { // Add new message to chan and user
 						Channel chan = chans.get(p.actionArgs.get(0));
 						chan.getUsers().get(p.nick).addMessage(p);
 						chan.addMessage(p);
