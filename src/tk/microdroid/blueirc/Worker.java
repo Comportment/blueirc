@@ -178,8 +178,8 @@ public class Worker {
 							finishedUserLagMeasurement = true;
 							eventHandler.onEvent(Event.USER_LAG_MEASURED, System.currentTimeMillis() - userLagStart);
 						}
-					} else if (p.action.equals("PRIVMSG") 
-							&& (p.actionArgs.get(0).matches("[\\#\\&].+"))) { // Add new message to chan and user
+					} else if (p.action.equals("PRIVMSG") // Add new message to chan and user
+							&& (p.actionArgs.get(0).matches("[\\#\\&].+"))) { // Starts with [#&] as in rfc1459#section-1.3
 						Channel chan = chans.get(p.actionArgs.get(0));
 						chan.getUsers().get(p.nick).addMessage(p);
 						chan.addMessage(p);

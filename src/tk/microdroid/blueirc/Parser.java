@@ -54,7 +54,7 @@ public class Parser {
 				if (splitter2.length == 2)
 					_cmdArgs = splitter2[1];
 			} else if (lineWords.length >= 3) {
-				if (lineWords[1].matches("\\d\\d\\d")) {
+				if (lineWords[1].matches("\\d\\d\\d")) { // Must be 3 digits, as in rfc1459#section-2.4
 					type = MessageType.NUMERIC;
 					server = lineWords[0].substring(1);
 					numberAction = lineWords[1];

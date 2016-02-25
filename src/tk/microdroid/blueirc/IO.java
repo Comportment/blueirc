@@ -57,6 +57,8 @@ public class IO {
 	 * If {@code data} length is more than 510, the data is trimmed to 510 characters
 	 * If {@code data} contains newlines, each line is flushed on its own
 	 * 
+	 * Length limit as in rfc1459#section-2.3
+	 * 
 	 * @param data The data to be sent
 	 * @throws IOException When unable to write to the stream
 	 */
@@ -70,6 +72,7 @@ public class IO {
     
     /**
      * Generates an IRC command from parameters.
+     * As in rfc1459#section-2.3.1
      * 
      * @param cmd The IRC command
      * @param args IRC command arguments
@@ -84,6 +87,8 @@ public class IO {
      * Generates a PRIVMSG IRC command.
      * Just a safer way to send PRIVMSGs
      * If {@code msg} contains newlines, it generates multiple commands
+     * 
+     * Length limit as in rfc1459#section-2.3
      * 
      * @param target The receiver of {@code msg}
      * @param msg The message to be sent
