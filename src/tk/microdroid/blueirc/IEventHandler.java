@@ -33,6 +33,7 @@ public interface IEventHandler {
      * TIMEOUT                   -> SocketTimeoutException -> The exception object
      * UNKNOWN_ERROR             -> IOException            -> The exception object
      * UNKNOWN_HOST              -> UnknownHostException   -> The exception object
+     * USER_LAG_MEASURED         -> long                   -> Lag in milliseconds
      * DATA_RECEIVED             -> Parser                 -> Parser object containing everything
      * DATA_SEND_FAIL            -> Message                -> The unsent message with it's ID
      * DATA_SENT                 -> Message                -> The sent message with it's ID

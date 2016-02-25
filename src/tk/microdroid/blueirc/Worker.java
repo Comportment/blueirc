@@ -68,10 +68,11 @@ public class Worker {
 	private boolean preserveChannels = false;
 
 	private long lag = 0;
-	private long lagStart = 0;
-	private int lagPingId = 0;
-	private boolean finishedLagMeasurement = true;
+	private long lagStart = 0, userLagStart = 0;
+	private int lagPingId = 0, userLagPingId = 0;
+	private boolean finishedLagMeasurement = true, finishedUserLagMeasurement = true;
 	private Timer lagTimer = new Timer();
+	private final String lagPrefix = "blueirc.", userLagPrefix = "blueirc.user.";
 
 	public Worker(String server, int port, String nick, String secondNick,
 			String username, String nickservPass, String serverPass,
@@ -168,10 +169,15 @@ public class Worker {
 					eventHandler.onEvent(Event.DATA_RECEIVED, p);
 					if (p.action.equals("PING")) {
 						send("PONG" + io.line.substring(4));
-					} else if (p.action.equals("PONG") && p.msg.equals("blueirc." + lagPingId)) { // Used in lag measurement
-						finishedLagMeasurement = true;
-						lag = System.currentTimeMillis() - lagStart;
-						eventHandler.onEvent(Event.LAG_MEASURED, lag);
+					} else if (p.action.equals("PONG")) { // Used in lag measurement
+						if (p.msg.equals(lagPrefix + lagPingId)) {
+							finishedLagMeasurement = true;
+							lag = System.currentTimeMillis() - lagStart;
+							eventHandler.onEvent(Event.LAG_MEASURED, lag);
+						} else if (p.msg.equals(userLagPrefix + userLagPingId)) {
+							finishedUserLagMeasurement = true;
+							eventHandler.onEvent(Event.USER_LAG_MEASURED, System.currentTimeMillis() - userLagStart);
+						}
 					} else if (p.action.equals("PRIVMSG") 
 							&& (p.actionArgs.get(0).matches("[\\#\\&].+"))) { // Add new message to chan and user
 						Channel chan = chans.get(p.actionArgs.get(0));
@@ -330,7 +336,7 @@ public class Worker {
 	 * @param msg The user input
 	 * @return The RAW IRC line, parsed from the user input
 	 */
-	public static String parseUserInput(String currentWindow, String msg) {
+	public String parseUserInput(String currentWindow, String msg) {
 		if (!msg.startsWith("/"))
 			return IO.privmsg(currentWindow, msg);
 		else {
@@ -362,6 +368,12 @@ public class Worker {
 				case "/bye":
 				case "/quit":
 					return "QUIT :" + args;
+				case "/ping":
+					if (finishedUserLagMeasurement) {
+						userLagStart = System.currentTimeMillis();
+						finishedUserLagMeasurement = false;
+						return "PING :" + userLagPrefix + (userLagPingId = idGen.incrementAndGet());
+					} else return "";
 				default:
 					return cmd.substring(1).toUpperCase() + args;
 				}
@@ -539,7 +551,7 @@ public class Worker {
 				return;
 			lagStart = System.currentTimeMillis();
 			finishedLagMeasurement = false;
-			send("PING :blueirc." + (lagPingId = idGen.incrementAndGet()));
+			send("PING :" + lagPrefix + (lagPingId = idGen.incrementAndGet()));
 		}
 	}
 }
