@@ -376,6 +376,8 @@ public class Worker {
 					return "MOTD";
 				case "/topic":
 					return "TOPIC" + args;
+				case "/mode":
+					return "MODE" + args;
 				default:
 					return "";
 				}
