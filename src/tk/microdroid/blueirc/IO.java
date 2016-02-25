@@ -61,8 +61,8 @@ public class IO {
 	 * @throws IOException When unable to write to the stream
 	 */
     public void write(String data) throws IOException {
-        if (data.length() > 510)
-            data = data.substring(0, 510);
+        if (data.length() > 508)
+            data = data.substring(0, 508);
         for (String line : data.split("\n"))
             writer.write(line + "\r\n");
         writer.flush();
