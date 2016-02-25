@@ -347,13 +347,9 @@ public class Worker {
 				case "/ns":
 				case "/nickserv":
 					return "PRIVMSG NICKSERV :" + args;
-				case "/join":
-					return "JOIN" + args;
 				case "/privmsg":
 				case "/msg":
 					return "PRIVMSG" + args;
-				case "/away":
-					return "AWAY" + args;
 				case "/close":
 				case "/part":
 					return "PART"
@@ -366,20 +362,8 @@ public class Worker {
 				case "/bye":
 				case "/quit":
 					return "QUIT :" + args;
-				case "/kick":
-					return "KICK" + args;
-				case "/nick":
-					return "NICK" + args;
-				case "/notice":
-					return "NOTICE" + args;
-				case "/motd":
-					return "MOTD";
-				case "/topic":
-					return "TOPIC" + args;
-				case "/mode":
-					return "MODE" + args;
 				default:
-					return "";
+					return cmd.substring(1).toUpperCase() + args;
 				}
 			}
 		}
