@@ -1,4 +1,4 @@
-package tk.microdroid.blueirc_demo;
+package tk.microdroid.blueirc.demo;
 
 import tk.microdroid.blueirc.Channel;
 import tk.microdroid.blueirc.Event;
