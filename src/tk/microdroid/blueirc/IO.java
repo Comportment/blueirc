@@ -77,7 +77,7 @@ public class IO {
      * @return
      */
     public static String compile(String cmd, String[] args, String msg) {
-        return cmd + " " + concat(args, " ") + (!msg.equals("") ? " :" + msg : "");
+        return cmd + " " + concat(args, " ") + (!msg.isEmpty() ? " :" + msg : "");
     }
 
     /**

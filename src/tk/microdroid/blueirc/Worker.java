@@ -314,6 +314,8 @@ public class Worker {
 	 * @throws IOException When registration fails
 	 */
 	private void register(String nick) throws IOException {
+		if (!serverInfo.serverPass.isEmpty())
+			send("PASS " + serverInfo.serverPass);
 		send(IO.compile("NICK", new String[] { nick }, ""));
 		send(IO.compile("USER", new String[] { serverInfo.username, "0", "*" },
 				"MicroIRC Android client"));
