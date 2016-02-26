@@ -311,7 +311,8 @@ public class Worker {
 			} finally {
 				eventHandler.onEvent(Event.DISCONNECTED, serverInfo.server);
 				lagTimer.cancel();
-				writerThread.interrupt();
+				if (writerThread != null)
+					writerThread.interrupt();
 				try {
 					if (serverInfo.ssl) sslSocket.close();
 					else socket.close();
