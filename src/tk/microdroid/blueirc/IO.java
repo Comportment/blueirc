@@ -25,15 +25,19 @@ public class IO {
     BufferedWriter writer;
     BufferedReader reader;
     String line;
+    
+    final static long rateLimit = 500;  // Time (ms) between each line
+    long lastWriteTime = System.currentTimeMillis();
+    boolean throttlingEnabled = true;
 
-	public IO(Socket socket) throws IOException {
+	void initialize(SSLSocket socket) throws IOException {
 		writer = new BufferedWriter(new OutputStreamWriter(
 				socket.getOutputStream(), Charset.forName("UTF-8")));
 		reader = new BufferedReader(new InputStreamReader(
 				socket.getInputStream()));
 	}
-
-	public IO(SSLSocket socket) throws IOException {
+	
+	void initialize(Socket socket) throws IOException {
 		writer = new BufferedWriter(new OutputStreamWriter(
 				socket.getOutputStream(), Charset.forName("UTF-8")));
 		reader = new BufferedReader(new InputStreamReader(
@@ -58,11 +62,16 @@ public class IO {
 	 * If {@code data} contains newlines, each line is flushed on its own
 	 * 
 	 * Length limit as in rfc1459#section-2.3
+	 * Safe rate limiting is 2 lines/sec, see {@link #rateLimit}
 	 * 
 	 * @param data The data to be sent
 	 * @throws IOException When unable to write to the stream
 	 */
     public void write(String data) throws IOException {
+    	try {
+    		if (lastWriteTime + rateLimit > System.currentTimeMillis())
+    			Thread.sleep((lastWriteTime + rateLimit) - System.currentTimeMillis());
+    	} catch (InterruptedException e) { throw new IOException("Writing thread interrupted"); }
         if (data.length() > 508)
             data = data.substring(0, 508);
         for (String line : data.split("\n"))
@@ -89,6 +98,7 @@ public class IO {
      * If {@code msg} contains newlines, it generates multiple commands
      * 
      * Length limit as in rfc1459#section-2.3
+     * Flooding was tested with 100 messages, 2 lines/sec
      * 
      * @param target The receiver of {@code msg}
      * @param msg The message to be sent

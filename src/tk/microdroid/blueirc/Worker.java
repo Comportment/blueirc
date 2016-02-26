@@ -87,10 +87,12 @@ public class Worker {
 		serverInfo.serverPass = serverPass;
 		serverInfo.ssl = ssl;
 		serverInfo.invalidSSL = invalidSSL;
+		io = new IO();
 	}
 
 	public Worker(ServerInfo info) {
 		serverInfo = info;
+		io = new IO();
 	}
 
 	/**
@@ -144,7 +146,7 @@ public class Worker {
 				} else {
 					socket = new Socket(serverInfo.server, serverInfo.port);
 				}
-				io = new IO(serverInfo.ssl ? sslSocket : socket);
+				io.initialize(serverInfo.ssl ? sslSocket : socket);
 				send("CAP LS");
 				// Writes data in writingQueue to the socket
 				writerThread = new Thread(new Runnable() {
@@ -549,6 +551,16 @@ public class Worker {
 	public long getLag() {
 		return finishedLagMeasurement ? lag : System.currentTimeMillis()
 				- lagStart;
+	}
+	
+	/**
+	 * Enables throttling to prevent flooding
+	 * Default is true
+	 * 
+	 * @param value true to throttle, false to not
+	 */
+	public void setThorrlingEnabled(boolean value) {
+		io.throttlingEnabled = true;
 	}
 	
 	class LagPing extends TimerTask {
