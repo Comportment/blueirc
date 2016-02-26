@@ -63,6 +63,7 @@ public class IO {
 	 * 
 	 * Length limit as in rfc1459#section-2.3
 	 * Safe rate limiting is 2 lines/sec, see {@link #rateLimit}
+     * Flooding was tested with 100 messages
 	 * 
 	 * @param data The data to be sent
 	 * @throws IOException When unable to write to the stream
@@ -98,7 +99,6 @@ public class IO {
      * If {@code msg} contains newlines, it generates multiple commands
      * 
      * Length limit as in rfc1459#section-2.3
-     * Flooding was tested with 100 messages, 2 lines/sec
      * 
      * @param target The receiver of {@code msg}
      * @param msg The message to be sent
