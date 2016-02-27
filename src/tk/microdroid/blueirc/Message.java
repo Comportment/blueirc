@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * An instance of {@code Message}, this way you get the ID back and match it with
  * 
  * @see Worker#send(String)
- * @see Worker.writingThread
  * 
  */
 public class Message {

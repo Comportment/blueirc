@@ -16,11 +16,6 @@ import java.util.regex.Pattern;
  * 
  * {@code Channel} instances are stored in an {@code ArrayList} in {@code Worker}.
  * 
- * @see Event.CHANNEL_JOINED
- * @see Event.LEFT_CHANNEL
- * @see Worker.chans
- * @see Worker.preserveChannels
- * 
  */
 public class Channel {
 	static int bufferLength = Integer.MAX_VALUE;

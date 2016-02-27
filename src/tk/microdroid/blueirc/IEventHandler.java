@@ -9,7 +9,6 @@ package tk.microdroid.blueirc;
  * See the reference below, it's also on the wiki on Github
  * 
  * @see Event
- * @see Example
  * 
  */
 public interface IEventHandler {

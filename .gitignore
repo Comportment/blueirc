@@ -14,5 +14,6 @@ hs_err_pid*
 # Project files
 .project
 .settings/org.eclipse.jdt.core.prefs
+doc/*
 bin/*
 Tester.java

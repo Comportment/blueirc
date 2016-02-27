@@ -17,8 +17,6 @@ import javax.net.ssl.SSLSocket;
  * in {@code Worker}
  * 
  * @see Worker#send(String)
- * @see Worker.socket
- * @see Worker.sslSocket
  * 
  */
 public class IO {
@@ -87,7 +85,7 @@ public class IO {
      * @param cmd The IRC command
      * @param args IRC command arguments
      * @param msg IRC command's data that comes after the ' :'
-     * @return
+     * @return Valid IRC command
      */
     public static String compile(String cmd, String[] args, String msg) {
         return cmd + " " + concat(args, " ") + (!msg.isEmpty() ? " :" + msg : "");

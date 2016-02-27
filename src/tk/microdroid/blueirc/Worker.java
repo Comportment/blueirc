@@ -519,7 +519,7 @@ public class Worker {
 	/**
 	 * Queue {@code data} to be flushed to the server.
 	 * 
-	 * @param data
+	 * @param data The data to be flushed
 	 * @return Message ID, -1 if {@code data} is invalid
 	 */
 	public int send(String data) {
@@ -597,7 +597,7 @@ public class Worker {
 	 /**
 	  * Set whether to pin SSL certificate or not.
 	  * Default is true.
-	  * This is only valid if {@link #serverInfo.invalidSSL} is true
+	  * This is only valid if {@code serverInfo.invalidSSL} is true
 	  * 
 	  * @param value True to pin certificate, false otherwise
 	  */
