@@ -1,7 +1,5 @@
 package tk.microdroid.blueirc.demo;
 
-import java.util.Scanner;
-
 import tk.microdroid.blueirc.Channel;
 import tk.microdroid.blueirc.Event;
 import tk.microdroid.blueirc.IEventHandler;
@@ -85,6 +83,7 @@ public class Example {
 				break;
 			case CERTIFICATE_PINNING_START: // Only when you accept invalid cert. on a server with self-signed one
 				System.out.print("Pinning certificate.. ");
+				worker.onCertificatePinning(true);
 				break;
 			default:
 				break;

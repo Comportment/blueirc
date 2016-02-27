@@ -15,7 +15,6 @@ import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -48,9 +47,9 @@ public class Worker {
 	private Thread mainThread;
 	private IO io;
 	
-	private Object certPinningLock = new ReentrantLock();
+	private Object certPinningLock = new Object();
 	private boolean pinCertificate = true;
-	private boolean certificateAccepted = false;
+	private volatile boolean certificateAccepted = false;
 	
 	private IEventHandler eventHandler = new IEventHandler() {
 		@Override
