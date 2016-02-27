@@ -9,7 +9,7 @@ package tk.microdroid.blueirc;
  * 
  */
 public class ServerInfo {
-    public String server, nick, secondNick, username, nickservPass, serverPass;
-    public int port;
-    public boolean ssl, invalidSSL;
+    public String server="", nick="", secondNick="", username="", nickservPass="", serverPass="";
+    public int port=6667;
+    public boolean ssl=false, invalidSSL=false;
 }

@@ -1,5 +1,7 @@
 package tk.microdroid.blueirc.demo;
 
+import java.util.Scanner;
+
 import tk.microdroid.blueirc.Channel;
 import tk.microdroid.blueirc.Event;
 import tk.microdroid.blueirc.IEventHandler;
@@ -11,8 +13,8 @@ public class Example {
 	static Worker worker;
 	
 	public static void main(String[] args) {
-		worker = new Worker("irc.subluminal.net", 6667, "BlueIRCNick", "BlueIRCNick_",
-				"BlueIRCUser", "", "", false, false);
+		worker = new Worker("irc.subluminal.net", 6697, "BlueIRCNick", "BlueIRCNick_",
+				"BlueIRCUser", true, true);
 		worker.setEventHandler(new MyHandler());
 		worker.setChannelBufferLength(50);
 		worker.setUserBufferLength(50);
@@ -40,7 +42,10 @@ public class Example {
 			case UNKNOWN_HOST:
 			case UNKNOWN_ERROR:
 			case TIMEOUT:
-				System.out.println("Whoops! crashed! " + event);
+				System.out.println("Whoops! crashed! " + ((Exception)args).getMessage());
+				break;
+			case SSL_CERTIFICATE_REFUSED:
+				System.out.println("Server uses invalid/self-signed SSL certificate!");
 				break;
 			case DISCONNECTED:
 				System.out.println("Disconnected from " + (String)args);
@@ -77,6 +82,10 @@ public class Example {
 				break;
 			case LAG_MEASURED:
 				System.out.println("Current server lag: " + (long)args + "ms");
+				break;
+			case CERTIFICATE_PINNING_START: // Only when you accept invalid cert. on a server with self-signed one
+				System.out.print("Pinning certificate.. ");
+				new Scanner(System.in).nextLine();
 				break;
 			default:
 				break;

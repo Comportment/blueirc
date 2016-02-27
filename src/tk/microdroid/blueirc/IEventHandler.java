@@ -19,11 +19,14 @@ public interface IEventHandler {
      * event                     -> typeof(args)           -> Description
      * 
      * ALL_NICKS_IN_USE          -> String                 -> The second nick
+     * CERTIFICATE_PINNING_FAIL  -> String                 -> Reason
+     * CERTIFICATE_PINNING_START -> String                 -> Informations with public key
      * CONNECTED                 -> String                 -> Server URL
      * DISCONNECTED              -> String                 -> Server URL
      * FIRST_NICK_IN_USE         -> String                 -> The first nick
      * GOT_SERVER_NAME           -> String                 -> The server name
      * GOT_MOTD                  -> String                 -> The new motd
+     * SSL_CERTIFICATE_REFUSED   -> IOException            -> The exception object
      * IRCV3_CAPABILITY_ACCEPTED -> String                 -> The accepted capabilities
      * IRCV3_CAPABILITY_REJECTED -> String                 -> The rejected capabilities
      * KICKED                    -> Parser                 -> The parser for that, to also get the user kicked us

@@ -6,6 +6,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -45,7 +47,11 @@ public class Worker {
 	private Thread writerThread;
 	private Thread mainThread;
 	private IO io;
-
+	
+	private Object certPinningLock = new ReentrantLock();
+	private boolean pinCertificate = true;
+	private boolean certificateAccepted = false;
+	
 	private IEventHandler eventHandler = new IEventHandler() {
 		@Override
 		public void onEvent(Event event, Object args) {
@@ -75,16 +81,13 @@ public class Worker {
 	private final String lagPrefix = "blueirc.", userLagPrefix = "blueirc.user.";
 
 	public Worker(String server, int port, String nick, String secondNick,
-			String username, String nickservPass, String serverPass,
-			boolean ssl, boolean invalidSSL) {
+			String username, boolean ssl, boolean invalidSSL) {
 		serverInfo = new ServerInfo();
 		serverInfo.server = server;
 		serverInfo.port = port;
 		serverInfo.nick = nick;
 		serverInfo.secondNick = secondNick;
 		serverInfo.username = username;
-		serverInfo.nickservPass = nickservPass;
-		serverInfo.serverPass = serverPass;
 		serverInfo.ssl = ssl;
 		serverInfo.invalidSSL = invalidSSL;
 		io = new IO();
@@ -138,11 +141,29 @@ public class Worker {
 						sc.init(null, trustAllCerts,
 								new java.security.SecureRandom());
 						sslFactory = sc.getSocketFactory();
-					} else
+						sslSocket = (SSLSocket) sslFactory.createSocket(
+								serverInfo.server, serverInfo.port);
+						sslSocket.startHandshake();
+						Certificate[] certs = sslSocket.getSession().getPeerCertificates();
+						if (certs.length < 1)
+							eventHandler.onEvent(Event.CERTIFICATE_PINNING_FAIL, "No certificates supplied!");
+						else {
+							if (pinCertificate) {
+								eventHandler.onEvent(Event.CERTIFICATE_PINNING_START, certs[0].getPublicKey());
+								synchronized (certPinningLock) {
+									while (!certificateAccepted)
+										certPinningLock.wait();
+								}
+							}
+							if (sslSocket.isClosed())
+								sslSocket = (SSLSocket) sslFactory.createSocket(serverInfo.server, serverInfo.port);
+						}
+					} else {
 						sslFactory = (SSLSocketFactory) SSLSocketFactory
 								.getDefault();
-					sslSocket = (SSLSocket) sslFactory.createSocket(
-							serverInfo.server, serverInfo.port);
+						sslSocket = (SSLSocket) sslFactory.createSocket(
+								serverInfo.server, serverInfo.port);
+					}
 				} else {
 					socket = new Socket(serverInfo.server, serverInfo.port);
 				}
@@ -307,6 +328,11 @@ public class Worker {
 			} catch (SocketTimeoutException e) {
 				eventHandler.onEvent(Event.TIMEOUT, e);
 			} catch (IOException e) {
+				if (e.getMessage().startsWith("sun.security.validator.ValidatorException"))
+					eventHandler.onEvent(Event.SSL_CERTIFICATE_REFUSED, e);
+				else 
+					eventHandler.onEvent(Event.UNKNOWN_ERROR, e);
+			} catch (InterruptedException e) {
 				eventHandler.onEvent(Event.UNKNOWN_ERROR, e);
 			} finally {
 				eventHandler.onEvent(Event.DISCONNECTED, serverInfo.server);
@@ -314,8 +340,8 @@ public class Worker {
 				if (writerThread != null)
 					writerThread.interrupt();
 				try {
-					if (serverInfo.ssl) sslSocket.close();
-					else socket.close();
+					if (serverInfo.ssl && sslSocket != null) sslSocket.close();
+					else if (socket != null) socket.close();
 				} catch (IOException e) {
 					
 				}
@@ -562,6 +588,55 @@ public class Worker {
 	 */
 	public void setThorrlingEnabled(boolean value) {
 		io.throttlingEnabled = true;
+	}
+	
+	/**
+	 * Set server password to use while connecting
+	 * 
+	 * @param password The password to use
+	 */
+	public void setServerPass(String password) {
+		serverInfo.serverPass = password;
+	}
+	 /**
+	  * Set whether to pin SSL certificate or not.
+	  * Default is true.
+	  * This is only valid if {@link #serverInfo.invalidSSL} is true
+	  * 
+	  * @param value True to pin certificate, false otherwise
+	  */
+	public void setPinCertificate(boolean value) {
+		pinCertificate = value;
+	}
+	
+	/**
+	 * Accept or deny the certificate.
+	 * This is mandatory while doing certificate pinning, not calling this
+	 * or not handling Event.CERTIFICATE_PINNING_START will prevent connection
+	 * to the server, the server will probably time out the socket.
+	 * 
+	 * If the user took too long to accept the certificate and the socket timed
+	 * out the the library automatically reconnects.
+	 * 
+	 * @param accepted True to accept the certificate and connect, false otherwise
+	 */
+	public void onCertificatePinning(boolean accepted) {
+		try {
+			certificateAccepted = true;
+			certPinningLock.notifyAll();
+			certPinningLock.notifyAll(); // For some reason I need to notify twice for it to work
+			if (!accepted) {
+				if (serverInfo.ssl)
+					sslSocket.close();
+				else 
+					socket.close();
+				lagTimer.cancel();
+				writerThread.interrupt();
+				mainThread.interrupt();
+			}
+		} catch (Exception e) {
+			// Don't do anything
+		}
 	}
 	
 	class LagPing extends TimerTask {
