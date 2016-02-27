@@ -85,7 +85,6 @@ public class Example {
 				break;
 			case CERTIFICATE_PINNING_START: // Only when you accept invalid cert. on a server with self-signed one
 				System.out.print("Pinning certificate.. ");
-				new Scanner(System.in).nextLine();
 				break;
 			default:
 				break;
