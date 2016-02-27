@@ -119,9 +119,6 @@ public class Worker {
 				if (serverInfo.ssl) {
 					SSLSocketFactory sslFactory;
 					if (serverInfo.invalidSSL) {
-						// For now this ignores the certificate, however, this will be changed to do certificate
-						// pinning (i.e. generating a fingerprint and asking the user to accept it or not,
-						// rather than just ignoring it
 						TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 							public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 								return new X509Certificate[0];
