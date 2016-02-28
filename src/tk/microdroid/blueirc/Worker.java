@@ -598,6 +598,28 @@ public class Worker {
 	}
 	
 	/**
+	 * Get a specific user object by nickname.
+	 * 
+	 * @param nick The nickname
+	 * @return The User object
+	 */
+	public User getUser(String nick) {
+		return users.get(nick);
+	}
+	
+	/**
+	 * Checks whether the user is ever known in any channel.
+	 * Note that if the user has quit and {@code preserveUsers}
+	 * Is false then the user is deleted and no longer known
+	 * 
+	 * @param nick The nickname
+	 * @return True if the user is known, otherwise false
+	 */
+	public boolean hasUser(String nick) {
+		return users.containsKey(nick);
+	}
+	
+	/**
 	 * Get a {@code Collection} of all the channels.
 	 * If {@code preserveChannels} is true, then this returns also left channels
 	 * You can check if the channel has been left by the hasLeft() method in the channel
