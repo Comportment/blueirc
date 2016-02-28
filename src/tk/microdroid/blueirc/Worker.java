@@ -8,6 +8,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Timer;
@@ -595,6 +596,25 @@ public class Worker {
 	 */
 	public Channel getChannel(String channelName) {
 		return chans.get(channelName);
+	}
+	
+	/**
+	 * Returns users and channels at once.
+	 * 
+	 * Useful for making a client, generally channels start with
+	 * # or &, otherwise it's a user, use instanceof to check the type 
+	 * of whether it's a user or a channel.
+	 * 
+	 * @return ArrayList of users and channels casted to Object
+	 * 
+	 */
+	public ArrayList<Object> getAllConversations() {
+		ArrayList<Object> result = new ArrayList<Object>();
+		for (Channel chan : chans.values())
+			result.add(chan);
+		for (User user : users.values())
+			result.add(user);
+		return result;
 	}
 	
 	/**
