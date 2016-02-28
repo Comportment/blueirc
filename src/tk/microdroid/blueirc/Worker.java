@@ -630,6 +630,11 @@ public class Worker {
 		return chans.values();
 	}
 	
+	/**
+	 * Returns the known users from all the channels.
+	 * 
+	 * @return Collection of users
+	 */
 	public Collection<User> getAllUsers() {
 		return users.values();
 	}
