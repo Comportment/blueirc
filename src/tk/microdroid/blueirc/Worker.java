@@ -231,10 +231,12 @@ public class Worker {
 									Event.IRCV3_CAPABILITY_ACCEPTED, p.msg);
 					} else if (p.action.equals("JOIN")) { // Create new Channel
 						if (p.nick.equals(usingSecondNick ? serverInfo.secondNick : serverInfo.nick)) {
-							if (!chans.containsKey(p.msg))
+							if (!chans.containsKey(p.msg)) {
 								chans.put(p.msg, new Channel(p.msg));
-							else
+							}
+							else {
 								chans.get(p.msg).rejoin();
+							}
 						} else {
 							if (chans.containsKey(p.msg)) {
 								Channel chan = chans.get(p.msg);
@@ -266,7 +268,7 @@ public class Worker {
 							serverInfo.nick = p.msg;
 						for (Channel chan : chans.values())
 							for (User user : chan.getUsers().values())
-								if (user.getNick().equals(p.msg))
+								if (user.getNick().equals(p.nick))
 									user.updateNick(p.msg);
 						if (users.containsKey(p.nick))
 							users.get(p.nick).updateNick(p.msg);
