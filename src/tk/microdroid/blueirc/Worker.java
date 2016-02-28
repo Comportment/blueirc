@@ -41,46 +41,47 @@ import javax.net.ssl.X509TrustManager;
  * 
  */
 public class Worker {
-	private final static AtomicInteger idGen = new AtomicInteger(0);
+	final static AtomicInteger idGen = new AtomicInteger(0);
 
-	private ServerInfo serverInfo;
-	private Thread writerThread;
-	private Thread mainThread;
-	private IO io;
+	Worker thisWorker;
+	ServerInfo serverInfo;
+	Thread writerThread;
+	Thread mainThread;
+	IO io;
 	
-	private Object certPinningLock = new Object();
-	private boolean pinCertificate = true;
-	private volatile boolean certificateAccepted = false;
+	Object certPinningLock = new Object();
+	boolean pinCertificate = true;
+	volatile boolean certificateAccepted = false;
 	
-	private IEventHandler eventHandler = new IEventHandler() {
+	IEventHandler eventHandler = new IEventHandler() {
 		@Override
 		public void onEvent(Event event, Object args) {
 			// Nothing.
 		}
 	};
-	private Socket socket;
-	private SSLSocket sslSocket;
-	private BlockingQueue<Message> writingQueue = new ArrayBlockingQueue<Message>(
+	Socket socket;
+	SSLSocket sslSocket;
+	BlockingQueue<Message> writingQueue = new ArrayBlockingQueue<Message>(
 			32);
-	private boolean usingSecondNick = false;
+	boolean usingSecondNick = false;
 
-	private boolean ircv3Support = false;
-	private String[] ircv3Capabilities = {};
-	private HashMap<Character, Character> prefixes = new HashMap<>(); // Server prefixes, from 005
-	private String serverName; // The server name received from 005
-	private StringBuilder motd;
+	boolean ircv3Support = false;
+	String[] ircv3Capabilities = {};
+	HashMap<Character, Character> prefixes = new HashMap<>(); // Server prefixes, from 005
+	String serverName; // The server name received from 005
+	StringBuilder motd;
 
-	private HashMap<String, Channel> chans = new HashMap<>();
-	private HashMap<String, User> users = new HashMap<>();
-	private boolean preserveChannels = false;
-	private boolean preserveUsers = false;
+	HashMap<String, Channel> chans = new HashMap<>();
+	HashMap<String, User> users = new HashMap<>();
+	boolean preserveChannels = false;
+	boolean preserveUsers = false;
 
-	private long lag = 0;
-	private long lagStart = 0, userLagStart = 0;
-	private int lagPingId = 0, userLagPingId = 0;
-	private boolean finishedLagMeasurement = true, finishedUserLagMeasurement = true;
-	private Timer lagTimer = new Timer();
-	private final String lagPrefix = "blueirc.", userLagPrefix = "blueirc.user.";
+	long lag = 0;
+	long lagStart = 0, userLagStart = 0;
+	int lagPingId = 0, userLagPingId = 0;
+	boolean finishedLagMeasurement = true, finishedUserLagMeasurement = true;
+	Timer lagTimer = new Timer();
+	final String lagPrefix = "blueirc.", userLagPrefix = "blueirc.user.";
 
 	public Worker(String server, int port, String nick, String secondNick,
 			String username, boolean ssl, boolean invalidSSL) {
@@ -93,11 +94,13 @@ public class Worker {
 		serverInfo.ssl = ssl;
 		serverInfo.invalidSSL = invalidSSL;
 		io = new IO();
+		thisWorker = this;
 	}
 
 	public Worker(ServerInfo info) {
 		serverInfo = info;
 		io = new IO();
+		thisWorker = this;
 	}
 
 	/**
@@ -189,176 +192,7 @@ public class Worker {
 				while (io.read() != null) {
 					Parser p = new Parser(io.line);
 					eventHandler.onEvent(Event.DATA_RECEIVED, p);
-					if (p.action.equals("PING")) {
-						send("PONG" + io.line.substring(4));
-					} else if (p.action.equals("PONG")) { // Used in lag measurement
-						if (p.msg.equals(lagPrefix + lagPingId)) {
-							finishedLagMeasurement = true;
-							lag = System.currentTimeMillis() - lagStart;
-							eventHandler.onEvent(Event.LAG_MEASURED, lag);
-						} else if (p.msg.equals(userLagPrefix + userLagPingId)) {
-							finishedUserLagMeasurement = true;
-							eventHandler.onEvent(Event.USER_LAG_MEASURED, System.currentTimeMillis() - userLagStart);
-						}
-					} else if (p.action.equals("PRIVMSG")) { // Add the message to the chan/user
-						if (p.actionArgs.get(0).matches("[\\#\\&].+")) {
-							Channel chan = chans.get(p.actionArgs.get(0));
-							chan.getUsers().get(p.nick).addMessage(p);
-							chan.addMessage(p);
-						} else {
-							if (users.containsKey(p.actionArgs.get(0))) {
-								users.get(p.actionArgs.get(0)).addMessage(p);
-							} else {
-								User user = new User(p.actionArgs.get(0), "");
-								user.addMessage(p);
-							}
-						}
-					} else if (p.action.equals("CAP")) {
-						ircv3Support = true;
-						String capType = p.actionArgs.get(1);
-						if (capType.equals("LS")) {
-							ircv3Capabilities = p.msg.split(" ");
-							String[] reqCpbs = { "multi-prefix" }; // Requested capabilities
-							for (String reqCpb : reqCpbs)
-								if (hasCapability(reqCpb))
-									send("CAP REQ " + reqCpb);
-							send("CAP END");
-							register(serverInfo.nick);
-						} else if (capType.equals("NAK"))
-							eventHandler.onEvent(
-									Event.IRCV3_CAPABILITY_REJECTED, p.msg);
-						else if (capType.equals("ACK"))
-							eventHandler.onEvent(
-									Event.IRCV3_CAPABILITY_ACCEPTED, p.msg);
-					} else if (p.action.equals("JOIN")) { // Create new Channel
-						if (p.nick.equals(usingSecondNick ? serverInfo.secondNick : serverInfo.nick)) {
-							if (!chans.containsKey(p.msg)) {
-								chans.put(p.msg, new Channel(p.msg));
-							}
-							else {
-								chans.get(p.msg).rejoin();
-							}
-						} else {
-							if (chans.containsKey(p.msg)) {
-								Channel chan = chans.get(p.msg);
-								if (!chan.hasUser(p.nick))
-									chan.addUser(p.nick, null);
-							}
-						}
-					} else if (p.action.equals("PART")) { // Remove channel (When not preserving them) or user in channel
-						if (p.nick
-								.equals(usingSecondNick ? serverInfo.secondNick
-										: serverInfo.nick)) {
-							eventHandler.onEvent(Event.LEFT_CHANNEL,
-									p.actionArgs.get(0));
-							chans.get(p.actionArgs.get(0)).leave();
-							if (!preserveChannels)
-								chans.remove(p.actionArgs.get(0));
-						} else {
-							chans.get(p.actionArgs.get(0)).removeUser(p.nick);
-							if (!preserveUsers) {
-								boolean userStillVisible = false; // i.e. We can see the user somewhere in the other channels
-								for (Channel chan : chans.values())
-									userStillVisible = chan.hasUser(p.nick) || userStillVisible;
-								if (!userStillVisible)
-									users.remove(p.nick);
-							}
-						}
-					} else if (p.action.equals("NICK")) { // Update nicknames upon nicknames change
-						if (p.msg.equals(serverInfo.nick))
-							serverInfo.nick = p.msg;
-						for (Channel chan : chans.values())
-							for (User user : chan.getUsers().values())
-								if (user.getNick().equals(p.nick))
-									user.updateNick(p.msg);
-						if (users.containsKey(p.nick))
-							users.get(p.nick).updateNick(p.msg);
-					} else if (p.action.equals("KICK")) { // Remove channel (If not preserving them) or user in channel
-						if (p.actionArgs.get(1).equals(
-								usingSecondNick ? serverInfo.secondNick
-										: serverInfo.nick)) {
-							eventHandler.onEvent(Event.KICKED, p);
-							chans.get(p.actionArgs.get(0)).leave();
-							if (!preserveChannels)
-								chans.remove(p.actionArgs.get(0));
-						} else {
-							chans.get(p.actionArgs.get(0)).removeUser(
-									p.actionArgs.get(1));
-							if (!preserveUsers) {
-								boolean userStillVisible = false; // i.e. We can see the user somewhere in the other channels
-								for (Channel chan : chans.values())
-									userStillVisible = chan.hasUser(p.nick) || userStillVisible;
-								if (!userStillVisible)
-									users.remove(p.nick);
-							}
-						}
-					} else if (p.action.equals("QUIT")) { // Remove user from all the channels
-						if (!preserveUsers) {
-							for (Channel chan : chans.values())
-								chan.removeUser(p.nick);
-							if (users.containsKey(p.nick))
-								users.remove(p.nick);
-						}
-					} else if (p.action.equals("TOPIC") && chans.containsKey(p.actionArgs.get(0))) { // Update topic upon change
-						chans.get(p.actionArgs.get(0)).setTopic(p.msg);
-					} else if (p.numberAction.equals("332") && chans.containsKey(p.actionArgs.get(1))) { // The topic sent upon join
-						chans.get(p.actionArgs.get(1)).setTopic(p.msg);
-					} else if (p.numberAction.equals("001")) { // Welcome to the server
-						eventHandler.onEvent(Event.CONNECTED, p.server);
-						lagTimer.schedule(new LagPing(), 0, 30000);
-					} else if (p.numberAction.equals("421")
-							&& p.actionArgs.get(1).equals("CAP")) { // Unknown command CAP (i.e. the server doesn't support IRCv3)
-						register(serverInfo.nick);
-					} else if (p.numberAction.equals("353")) { // NAMES response
-						if (chans.containsKey(p.actionArgs.get(2))) {
-							Channel chan = chans.get(p.actionArgs.get(2));
-							for (String user : p.msg.split(" ")) {
-								chan.addUser(user, prefixes);
-								if (!users.containsKey(user))
-									users.put(user, new User(user, prefixes));
-							}
-						}
-					} else if (p.numberAction.equals("005")) { // Server capabilities, sent upon connection
-						for (String spec : p.actionArgs) {
-							String[] kvSplitter = spec.split("=", 2);
-							String key = kvSplitter[0].toUpperCase();
-							String value = kvSplitter.length == 2 ? kvSplitter[1]
-									: "";
-							switch (key) {
-							case "PREFIX":
-								String[] splitter = value.substring(1).split("\\)");
-								for (int i = 0; i < splitter[0].length(); i++) {
-									prefixes.put(splitter[1].charAt(i),
-											splitter[0].charAt(i));
-								}
-								break;
-							case "NETWORK":
-								serverName = value;
-								eventHandler.onEvent(Event.GOT_SERVER_NAME,
-										value);
-							}
-						}
-					} else if (p.numberAction.equals("375")) { // Start of MOTD
-						motd = new StringBuilder();
-					} else if (p.numberAction.equals("372")) { // MOTD message
-						motd.append("\n" + p.msg);
-					} else if (p.numberAction.equals("376")) { // End of MOTD
-						motd.trimToSize();
-						eventHandler.onEvent(Event.GOT_MOTD, motd.toString()
-								.substring(1));
-					} else if (p.numberAction.equals("366")) { // Channel joined
-						eventHandler.onEvent(Event.JOINED_CHANNEL, p.actionArgs.get(1));
-					} else if (p.numberAction.equals("433")) { // Nickname in use
-						if (!usingSecondNick) {
-							eventHandler.onEvent(Event.FIRST_NICK_IN_USE,
-									serverInfo.nick);
-							register(serverInfo.secondNick);
-						} else {
-							eventHandler.onEvent(Event.ALL_NICKS_IN_USE,
-									serverInfo.secondNick);
-							break;
-						}
-					}
+					Handler.handle(thisWorker, p);
 				}
 			} catch (NoSuchAlgorithmException | KeyManagementException e) {
 				// Never's gonna happen
@@ -394,7 +228,7 @@ public class Worker {
 	 * @param nick The nickname to use
 	 * @throws IOException When registration fails
 	 */
-	private void register(String nick) throws IOException {
+	void register(String nick) throws IOException {
 		if (!serverInfo.serverPass.isEmpty())
 			send("PASS " + serverInfo.serverPass);
 		send(IO.compile("NICK", new String[] { nick }, ""));
