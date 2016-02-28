@@ -230,10 +230,18 @@ public class Worker {
 							eventHandler.onEvent(
 									Event.IRCV3_CAPABILITY_ACCEPTED, p.msg);
 					} else if (p.action.equals("JOIN")) { // Create new Channel
-						if (!chans.containsKey(p.msg))
-							chans.put(p.msg, new Channel(p.msg));
-						else
-							chans.get(p.msg).rejoin();
+						if (p.nick.equals(usingSecondNick ? serverInfo.secondNick : serverInfo.nick)) {
+							if (!chans.containsKey(p.msg))
+								chans.put(p.msg, new Channel(p.msg));
+							else
+								chans.get(p.msg).rejoin();
+						} else {
+							if (chans.containsKey(p.msg)) {
+								Channel chan = chans.get(p.msg);
+								if (!chan.hasUser(p.nick))
+									chan.addUser(p.nick, null);
+							}
+						}
 					} else if (p.action.equals("PART")) { // Remove channel (When not preserving them) or user in channel
 						if (p.nick
 								.equals(usingSecondNick ? serverInfo.secondNick
