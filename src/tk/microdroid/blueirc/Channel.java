@@ -157,20 +157,8 @@ public class Channel {
 	 * @param prefixes The prefixes supported by the server, parsed from 005
 	 */
 	void addUser(String nick, HashMap<Character, Character> prefixes) {
-		String prefixesStr = "";
-		for (Character key : prefixes.keySet())
-			prefixesStr += key;
-		Pattern pattern = Pattern.compile("([" + prefixesStr + "]*)(\\w.+)");
-		Matcher matcher = pattern.matcher(nick);
-		boolean matches = matcher.matches();
-		String prefix = matches ? matcher.group(1) : "";
-		String rawName = matches ? matcher.group(2) : nick;
-		for (Character c : prefixes.keySet())
-			if (prefixes.containsKey(c))
-				prefix.replace(c, prefixes.get(c));
-		
-		User user = new User(rawName, prefix);
-		users.put(rawName, user);
+		User user = new User(nick, prefixes);
+		users.put(nick, user);
 	}
 	
 	/**

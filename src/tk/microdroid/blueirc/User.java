@@ -1,7 +1,10 @@
 package tk.microdroid.blueirc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Represents an IRC user.
@@ -21,6 +24,28 @@ public class User {
 		this.nick = nick;
 		this.prefix = prefix;
 		messages = new ArrayList<Parser>();
+	}
+	
+	User(String nick, HashMap<Character, Character> prefixes) {
+		if (prefixes != null) {
+			String prefixesStr = "";
+			for (Character key : prefixes.keySet())
+				prefixesStr += key;
+			Pattern pattern = Pattern.compile("([" + prefixesStr + "]*)(\\w.+)");
+			Matcher matcher = pattern.matcher(nick);
+			boolean matches = matcher.matches();
+			String prefix = matches ? matcher.group(1) : "";
+			String rawName = matches ? matcher.group(2) : nick;
+			for (Character c : prefixes.keySet())
+				if (prefixes.containsKey(c))
+				prefix.replace(c, prefixes.get(c));
+		
+			this.nick = rawName;
+			this.prefix = prefix;
+		} else {
+			this.nick = nick;
+			this.prefix = "";
+		}
 	}
 	
 	/**

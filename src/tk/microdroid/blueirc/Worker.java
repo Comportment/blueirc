@@ -70,7 +70,9 @@ public class Worker {
 	private StringBuilder motd;
 
 	private HashMap<String, Channel> chans = new HashMap<>();
+	private HashMap<String, User> users = new HashMap<>();
 	private boolean preserveChannels = false;
+	private boolean preserveUsers = false;
 
 	private long lag = 0;
 	private long lagStart = 0, userLagStart = 0;
@@ -197,11 +199,19 @@ public class Worker {
 							finishedUserLagMeasurement = true;
 							eventHandler.onEvent(Event.USER_LAG_MEASURED, System.currentTimeMillis() - userLagStart);
 						}
-					} else if (p.action.equals("PRIVMSG") // Add new message to chan and user
-							&& (p.actionArgs.get(0).matches("[\\#\\&].+"))) { // Starts with [#&] as in rfc1459#section-1.3
-						Channel chan = chans.get(p.actionArgs.get(0));
-						chan.getUsers().get(p.nick).addMessage(p);
-						chan.addMessage(p);
+					} else if (p.action.equals("PRIVMSG")) { // Add the message to the chan/user
+						if (p.actionArgs.get(0).matches("[\\#\\&].+")) {
+							Channel chan = chans.get(p.actionArgs.get(0));
+							chan.getUsers().get(p.nick).addMessage(p);
+							chan.addMessage(p);
+						} else {
+							if (users.containsKey(p.actionArgs.get(0))) {
+								users.get(p.actionArgs.get(0)).addMessage(p);
+							} else {
+								User user = new User(p.actionArgs.get(0), "");
+								user.addMessage(p);
+							}
+						}
 					} else if (p.action.equals("CAP")) {
 						ircv3Support = true;
 						String capType = p.actionArgs.get(1);
@@ -235,6 +245,13 @@ public class Worker {
 								chans.remove(p.actionArgs.get(0));
 						} else {
 							chans.get(p.actionArgs.get(0)).removeUser(p.nick);
+							if (!preserveUsers) {
+								boolean userStillVisible = false; // i.e. We can see the user somewhere in the other channels
+								for (Channel chan : chans.values())
+									userStillVisible = chan.hasUser(p.nick) || userStillVisible;
+								if (!userStillVisible)
+									users.remove(p.nick);
+							}
 						}
 					} else if (p.action.equals("NICK")) { // Update nicknames upon nicknames change
 						if (p.msg.equals(serverInfo.nick))
@@ -243,6 +260,8 @@ public class Worker {
 							for (User user : chan.getUsers().values())
 								if (user.getNick().equals(p.msg))
 									user.updateNick(p.msg);
+						if (users.containsKey(p.nick))
+							users.get(p.nick).updateNick(p.msg);
 					} else if (p.action.equals("KICK")) { // Remove channel (If not preserving them) or user in channel
 						if (p.actionArgs.get(1).equals(
 								usingSecondNick ? serverInfo.secondNick
@@ -254,10 +273,20 @@ public class Worker {
 						} else {
 							chans.get(p.actionArgs.get(0)).removeUser(
 									p.actionArgs.get(1));
+							if (!preserveUsers) {
+								boolean userStillVisible = false; // i.e. We can see the user somewhere in the other channels
+								for (Channel chan : chans.values())
+									userStillVisible = chan.hasUser(p.nick) || userStillVisible;
+								if (!userStillVisible)
+									users.remove(p.nick);
+							}
 						}
 					} else if (p.action.equals("QUIT")) { // Remove user from all the channels
-						for (Channel chan : chans.values()) {
-							chan.removeUser(p.nick);
+						if (!preserveUsers) {
+							for (Channel chan : chans.values())
+								chan.removeUser(p.nick);
+							if (users.containsKey(p.nick))
+								users.remove(p.nick);
 						}
 					} else if (p.action.equals("TOPIC") && chans.containsKey(p.actionArgs.get(0))) { // Update topic upon change
 						chans.get(p.actionArgs.get(0)).setTopic(p.msg);
@@ -272,8 +301,11 @@ public class Worker {
 					} else if (p.numberAction.equals("353")) { // NAMES response
 						if (chans.containsKey(p.actionArgs.get(2))) {
 							Channel chan = chans.get(p.actionArgs.get(2));
-							for (String user : p.msg.split(" "))
+							for (String user : p.msg.split(" ")) {
 								chan.addUser(user, prefixes);
+								if (!users.containsKey(user))
+									users.put(user, new User(user, prefixes));
+							}
 						}
 					} else if (p.numberAction.equals("005")) { // Server capabilities, sent upon connection
 						for (String spec : p.actionArgs) {
@@ -455,6 +487,16 @@ public class Worker {
 	public void setPreserveChannels(boolean value) {
 		preserveChannels = value;
 	}
+	
+	/**
+	 * Preserves users after them quitting or parting from known channels
+	 * Default value is to remove users
+	 * 
+	 * @param value The value
+	 */
+	public void setPreserveUsers(boolean value) {
+		preserveUsers = value;
+	}
 
 	/**
 	 * Sets the maximum amount of channel messages.
@@ -554,6 +596,10 @@ public class Worker {
 	 */
 	public Collection<Channel> getAllChannels() {
 		return chans.values();
+	}
+	
+	public Collection<User> getAllUsers() {
+		return users.values();
 	}
 	
 	/**
