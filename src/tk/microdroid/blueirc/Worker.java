@@ -378,10 +378,10 @@ public class Worker {
 	 * Get the server name
 	 * This is the server name parsed from 005
 	 * 
-	 * @return Empty String if not available, otherwise the server name
+	 * @return Server-sent name if available, if not, the server URL
 	 */
 	public String getServerName() {
-		return serverName;
+		return serverName.isEmpty() ? serverInfo.server : serverName;
 	}
 
 	/**
