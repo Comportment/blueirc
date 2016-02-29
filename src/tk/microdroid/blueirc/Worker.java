@@ -435,8 +435,7 @@ public class Worker {
 	/**
 	 * Returns users and channels at once.
 	 * 
-	 * Useful for making a client, generally channels start with
-	 * # or &, otherwise it's a user, use instanceof to check the type 
+	 * Useful for making a client, use instanceof to check the type 
 	 * of whether it's a user or a channel.
 	 * 
 	 * @return ArrayList of users and channels casted to Object
