@@ -3,6 +3,23 @@ package tk.microdroid.blueirc;
 import java.io.IOException;
 
 public class Handler {
+	
+	/**
+	 * Handle incoming IRC messages.
+	 * Here you simply handle all the command and
+	 * Messages sent from the IRC server, Worker variables
+	 * Are now changed to have package visibility, so you
+	 * Can access the variables of Worker through the passed w
+	 * Parameter.
+	 * 
+	 * This had better be in Worker class itself, but that way the
+	 * Worker class grown to an abnormal length, so this splits
+	 * Things in about a half.
+	 * 
+	 * @param w The worker instance
+	 * @param p The parser instance, the input from the server boxed in a Parser
+	 * @throws IOException
+	 */
 	static void handle(Worker w, Parser p) throws IOException {
 		switch (p.action) {
 		case "PING":
