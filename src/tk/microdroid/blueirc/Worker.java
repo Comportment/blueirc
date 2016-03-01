@@ -68,8 +68,8 @@ public class Worker {
 	boolean ircv3Support = false;
 	String[] ircv3Capabilities = {};
 	HashMap<Character, Character> prefixes = new HashMap<>(); // Server prefixes, from 005
-	String serverName; // The server name received from 005
-	StringBuilder motd;
+	String serverName = ""; // The server name received from 005
+	StringBuilder motd = new StringBuilder();
 
 	HashMap<String, Channel> chans = new HashMap<>();
 	HashMap<String, User> users = new HashMap<>();
