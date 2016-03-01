@@ -4,7 +4,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
@@ -14,6 +13,7 @@ hs_err_pid*
 # Project files
 .project
 .settings/org.eclipse.jdt.core.prefs
+libs/*
 doc/*
 bin/*
 Tester.java
