@@ -1,5 +1,7 @@
 package tk.microdroid.blueirc;
 
+import java.io.Serializable;
+
 /**
  * Contains connection info about the IRC server.
  * Either passed to the constructor of {@code Worker} or the other constructor creates it.
@@ -8,8 +10,9 @@ package tk.microdroid.blueirc;
  * @see Worker#Worker(ServerInfo)
  * 
  */
-public class ServerInfo {
-    public String server="", nick="", secondNick="", username="", nickservPass="", serverPass="";
+public class ServerInfo implements Serializable {
+	private static final long serialVersionUID = -6804167618737848286L;
+	public String server="", nick="", secondNick="", username="", nickservPass="", serverPass="";
     public int port=6667;
     public boolean ssl=false, invalidSSL=false;
 }
