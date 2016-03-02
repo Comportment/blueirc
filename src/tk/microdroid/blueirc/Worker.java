@@ -381,6 +381,8 @@ public class Worker {
 	 * @return Server-sent name if available, if not, the server URL
 	 */
 	public String getServerName() {
+		if (serverName == null)
+			return serverInfo.server;
 		return serverName.isEmpty() ? serverInfo.server : serverName;
 	}
 
