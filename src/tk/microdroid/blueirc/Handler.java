@@ -151,21 +151,25 @@ public class Handler {
 		case "NOTICE":
 			if (p.msg.toLowerCase().equals("*** no ident response") && !w.connected)
 				w.register(w.serverInfo.nick);
+			break;
 		default:
 			switch (p.numberAction) {
 
 			case "332": // The topic sent upon join
 				if (w.chans.containsKey(p.actionArgs.get(1)))
 					w.chans.get(p.actionArgs.get(1)).setTopic(p.msg);
+				break;
 			case "001": // Welcome to the server
 				w.eventHandler.onEvent(Event.CONNECTED, p.server);
 				w.lagTimer.schedule(w.new LagPing(), 0, 30000);
 				w.connected = true;
+				break;
 			case "421": // Unknown command CAP (i.e. the server doesn't support
 						// IRCv3)
 			case "451": // You have not registered
 				if (!w.connected)
 					w.register(w.serverInfo.nick);
+				break;
 			case "353": // NAMES response
 				if (w.chans.containsKey(p.actionArgs.get(2))) {
 					Channel chan = w.chans.get(p.actionArgs.get(2));
@@ -175,6 +179,7 @@ public class Handler {
 							w.users.put(user, new User(user, w.prefixes));
 					}
 				}
+				break;
 			case "005": // Server capabilities, sent upon connection
 				for (String spec : p.actionArgs) {
 					String[] kvSplitter = spec.split("=", 2);
@@ -194,17 +199,21 @@ public class Handler {
 						break;
 					}
 				}
+				break;
 			case "375": // Start of MOTD
 				w.motd = new StringBuilder();
 			case "372": // MOTD message
 				w.motd.append("\n" + p.msg);
+				break;
 			case "376": // End of MOTD
 				w.motd.trimToSize();
 				w.eventHandler.onEvent(Event.GOT_MOTD, w.motd.toString()
 						.substring(1));
+				break;
 			case "366": // Channel joined
 				w.eventHandler.onEvent(Event.JOINED_CHANNEL,
 						p.actionArgs.get(1));
+				break;
 			case "433": // Nickname in use
 				if (!w.usingSecondNick) {
 					w.eventHandler.onEvent(Event.FIRST_NICK_IN_USE,
@@ -213,8 +222,9 @@ public class Handler {
 				} else {
 					w.eventHandler.onEvent(Event.ALL_NICKS_IN_USE,
 							w.serverInfo.secondNick);
-					break;
+					throw new RuntimeException("All nicks in use");
 				}
+				break;
 			}
 			break;
 		}

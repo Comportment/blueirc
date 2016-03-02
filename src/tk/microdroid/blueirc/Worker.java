@@ -208,6 +208,8 @@ public class Worker {
 					eventHandler.onEvent(Event.UNKNOWN_ERROR, e);
 			} catch (InterruptedException e) {
 				eventHandler.onEvent(Event.UNKNOWN_ERROR, e);
+			} catch (RuntimeException e) {
+				// Reserved for throwing errors to get out of the loop
 			} finally {
 				eventHandler.onEvent(Event.DISCONNECTED, serverInfo.server);
 				lagTimer.cancel();
