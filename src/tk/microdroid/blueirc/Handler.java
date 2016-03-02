@@ -148,6 +148,9 @@ public class Handler {
 			if (w.chans.containsKey(p.actionArgs.get(0)))
 				w.chans.get(p.actionArgs.get(0)).setTopic(p.msg);
 			break;
+		case "NOTICE":
+			if (p.msg.toLowerCase().equals("*** no ident response") && !w.connected)
+				w.register(w.serverInfo.nick);
 		default:
 			switch (p.numberAction) {
 
@@ -157,9 +160,11 @@ public class Handler {
 			case "001": // Welcome to the server
 				w.eventHandler.onEvent(Event.CONNECTED, p.server);
 				w.lagTimer.schedule(w.new LagPing(), 0, 30000);
+				w.connected = true;
 			case "421": // Unknown command CAP (i.e. the server doesn't support
 						// IRCv3)
-				if (p.actionArgs.get(1).equals("CAP"))
+			case "451": // You have not registered
+				if (!w.connected)
 					w.register(w.serverInfo.nick);
 			case "353": // NAMES response
 				if (w.chans.containsKey(p.actionArgs.get(2))) {

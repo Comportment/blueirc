@@ -64,6 +64,7 @@ public class Worker {
 	BlockingQueue<Message> writingQueue = new ArrayBlockingQueue<Message>(
 			32);
 	boolean usingSecondNick = false;
+	boolean connected = false;
 
 	boolean ircv3Support = false;
 	String[] ircv3Capabilities = {};
