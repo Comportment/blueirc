@@ -42,6 +42,7 @@ import javax.net.ssl.X509TrustManager;
  */
 public class Worker {
 	final static AtomicInteger idGen = new AtomicInteger(0);
+	private int workerId = 0;
 
 	Worker thisWorker;
 	ServerInfo serverInfo;
@@ -106,10 +107,13 @@ public class Worker {
 
 	/**
 	 * Start the {@code Worker} instance.
+	 * 
+	 * @return The unique worker id
 	 */
-	public void start() {
+	public int start() {
 		mainThread = new Thread(new IRCWorkerRunnable());
 		mainThread.start();
+		return (workerId = idGen.incrementAndGet());
 	}
 
 	/**
@@ -573,6 +577,15 @@ public class Worker {
 		} catch (Exception e) {
 			// Don't do anything
 		}
+	}
+	
+	/**
+	 * Get the current worker unique ID
+	 * 
+	 * @return Current worker ID
+	 */
+	public int getId() {
+		return workerId;
 	}
 	
 	class LagPing extends TimerTask {
