@@ -9,7 +9,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -487,8 +486,8 @@ public class Worker {
 	 * 
 	 * @return Collection of all the channels
 	 */
-	public Collection<Channel> getAllChannels() {
-		return chans.values();
+	public ArrayList<Channel> getAllChannels() {
+		return new ArrayList<Channel>(chans.values());
 	}
 	
 	/**
@@ -496,8 +495,8 @@ public class Worker {
 	 * 
 	 * @return Collection of users
 	 */
-	public Collection<User> getAllUsers() {
-		return users.values();
+	public ArrayList<User> getAllUsers() {
+		return new ArrayList<User>(users.values());
 	}
 	
 	/**
