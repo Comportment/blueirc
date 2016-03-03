@@ -23,7 +23,7 @@ public class User {
 	User(String nick, String prefix) {
 		this.nick = nick;
 		this.prefix = prefix;
-		messages = new ArrayList<Parser>();
+		this.messages = new ArrayList<Parser>();
 	}
 	
 	User(String nick, HashMap<Character, Character> prefixes) {
@@ -46,6 +46,7 @@ public class User {
 			this.nick = nick;
 			this.prefix = "";
 		}
+		this.messages = new ArrayList<Parser>();
 	}
 	
 	/**
