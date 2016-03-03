@@ -206,13 +206,12 @@ public class Worker {
 					eventHandler.onEvent(Event.SSL_CERTIFICATE_REFUSED, e);
 				else 
 					eventHandler.onEvent(Event.UNKNOWN_ERROR, e);
-			} catch (InterruptedException e) {
+			} catch (Exception e) {
 				eventHandler.onEvent(Event.UNKNOWN_ERROR, e);
-			} catch (RuntimeException e) {
-				// Reserved for throwing errors to get out of the loop
 			} finally {
 				eventHandler.onEvent(Event.DISCONNECTED, serverInfo.server);
 				lagTimer.cancel();
+				connected = false;
 				if (writerThread != null)
 					writerThread.interrupt();
 				try {

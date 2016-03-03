@@ -222,7 +222,6 @@ public class Handler {
 				} else {
 					w.eventHandler.onEvent(Event.ALL_NICKS_IN_USE,
 							w.serverInfo.secondNick);
-					throw new RuntimeException("All nicks in use");
 				}
 				break;
 			}
