@@ -526,7 +526,7 @@ public class Worker {
 	 * 
 	 * @param value true to throttle, false to not
 	 */
-	public void setThorrlingEnabled(boolean value) {
+	public void setThrottlingEnabled(boolean value) {
 		io.throttlingEnabled = true;
 	}
 	
