@@ -175,8 +175,9 @@ public class Handler {
 					Channel chan = w.chans.get(p.actionArgs.get(2));
 					for (String user : p.msg.split(" ")) {
 						chan.addUser(user, w.prefixes);
-						if (!w.users.containsKey(user))
+						if (!w.users.containsKey(user)) {
 							w.users.put(user, new User(user, w.prefixes));
+						}
 					}
 				}
 				break;

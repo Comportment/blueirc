@@ -18,12 +18,11 @@ public class User {
 	static int bufferLength = Integer.MAX_VALUE;
 	private String nick;
 	private String prefix;
-	private ArrayList<Parser> messages;
+	private ArrayList<Parser> messages = new ArrayList<Parser>();
 	
 	User(String nick, String prefix) {
 		this.nick = nick;
 		this.prefix = prefix;
-		this.messages = new ArrayList<Parser>();
 	}
 	
 	User(String nick, HashMap<Character, Character> prefixes) {
@@ -38,15 +37,13 @@ public class User {
 			String rawName = matches ? matcher.group(2) : nick;
 			for (Character c : prefixes.keySet())
 				if (prefixes.containsKey(c))
-				prefix.replace(c, prefixes.get(c));
-		
+					prefix = prefix.replace(c, prefixes.get(c));
 			this.nick = rawName;
 			this.prefix = prefix;
 		} else {
 			this.nick = nick;
 			this.prefix = "";
 		}
-		this.messages = new ArrayList<Parser>();
 	}
 	
 	/**
