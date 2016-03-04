@@ -156,7 +156,7 @@ public class Channel {
 	 */
 	void addUser(String nick, HashMap<Character, Character> prefixes) {
 		User user = new User(nick, prefixes);
-		users.put(nick, user);
+		users.put(user.getNick(), user);
 	}
 	
 	/**
