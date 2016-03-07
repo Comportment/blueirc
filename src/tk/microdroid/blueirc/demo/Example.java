@@ -11,8 +11,6 @@ public class Example {
 	static Worker worker;
 	
 	public static void main(String[] args) {
-		System.setProperty("socksProxyHost","localhost");
-		System.setProperty("socksProxyPort","23456");
 		
 		worker = new Worker("irc.freenode.net", 6697, "BlueIRCNick", "BlueIRCNick_",
 				"BlueIRCUser", true, true);
@@ -40,16 +38,6 @@ public class Example {
 				System.out.println("Joining #blueirc..");
 				worker.send("JOIN #blueirc");
 				//defaults to true. This module determines if a WHO command will be sent or not on JOIN
-				if(worker.getWHOSetting()==true){
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					worker.send("WHO #blueirc");
-				}
-				
 				break;
 			case UNKNOWN_HOST:
 			case UNKNOWN_ERROR:

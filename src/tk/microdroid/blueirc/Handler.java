@@ -182,6 +182,7 @@ public class Handler {
 					chanUser.setHostname(hostmask);
 					chanUser.setRealName(realname);
 					chanUser.setLogin(ident);
+					System.out.println(chanUser.toString());
 				}
 				
 				break;
@@ -210,6 +211,10 @@ public class Handler {
 							w.users.put(newUser.getNick(), newUser);
 						}
 					}
+				}
+				//after getting the NAMES, a WHO command is sent if the USER has that setting enabled
+				if(w.getWHOSetting()==true){
+					w.send("WHO " + p.actionArgs.get(2));
 				}
 				break;
 			case "005": // Server capabilities, sent upon connection
