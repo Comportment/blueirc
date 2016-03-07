@@ -155,6 +155,36 @@ public class Handler {
 		default:
 			switch (p.numberAction) {
 
+			case "352":
+				//THIS IS PARSING THE WHO INPUT
+				//Sample WHO output:
+			//	:leguin.freenode.net 352 BlueIRCNick #blueirc-test ~GitGud unaffiliated/gitgud rajaniemi.freenode.net GitGud H@ :0 Lowlife
+				String ident = null;
+				String hostmask = null;
+				String nick = null;
+				String server = null;
+				String realname = "";
+				String channel = null;
+				//Takes raw WHO data and parses all the relevant user information to populate user objects
+				realname = p.raw.split(":0 ")[1];
+				ident = p.raw.split(" ")[4];
+				channel = p.raw.split(" ")[3];
+				hostmask = p.raw.split(" ")[5];
+				nick = p.raw.split(" ")[7];
+				server = p.raw.split(" ")[6];
+				realname = p.raw.split(":0 ")[1];
+				if (w.chans.containsKey(channel)) {
+				//After getting the informations it goes and finds the relevant User by nick (which was already established from NAMES)
+				//And adds the remaining informations on there
+					Channel chan = w.chans.get(channel);
+					User chanUser = chan.getUsers().get(nick);
+					chanUser.setServer(server);
+					chanUser.setHostname(hostmask);
+					chanUser.setRealName(realname);
+					chanUser.setLogin(ident);
+				}
+				
+				break;
 			case "332": // The topic sent upon join
 				if (w.chans.containsKey(p.actionArgs.get(1)))
 					w.chans.get(p.actionArgs.get(1)).setTopic(p.msg);

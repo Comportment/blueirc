@@ -35,6 +35,7 @@ public class Parser {
 	 * 
 	 * @param line the IRC command received from the server
 	 */
+
 	public Parser(String line) {
 		try {
 			raw = line;
