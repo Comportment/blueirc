@@ -16,8 +16,14 @@ import java.util.regex.Pattern;
  */
 public class User {
 	static int bufferLength = Integer.MAX_VALUE;
+	//Useful info for each user in the channel. Most of these may not be filled if WHO command is never sent on Channel join
 	private String nick;
 	private String prefix;
+	private String realName;
+	private String hostmask;
+	private String server;
+	private String login;
+	
 	private ArrayList<Parser> messages = new ArrayList<Parser>();
 	
 	User(String nick, String prefix) {
@@ -62,10 +68,38 @@ public class User {
 	 * 
 	 * @return User nick
 	 */
+	//Set and get methods for all parameters
 	public String getNick() {
 		return nick;
 	}
 	
+	public String getLogin() {
+		return login;
+	}
+	public String getServer() {
+		return server;
+	}
+	public String getRealName() {
+		return realName;
+	}
+	
+	public void setLogin(String login) {
+		this.login =  login;
+	}
+	public void setHostname(String hostname) {
+		this.hostmask = hostname;
+	}
+	public void setServer(String server) {
+		this.server = server;
+	}
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+	//Outputs everything for debugging purposes
+	public String toString(){
+		String output = "Nick: " + nick + " hostmask: " + hostmask + " realName: " + realName + " server: " + server + " prefix: " + prefix ;
+		return output;
+	}
 	/**
 	 * Gets user prefix.
 	 * Since this library supports IRCv3, if it's connected to an IRCv3 enabled server

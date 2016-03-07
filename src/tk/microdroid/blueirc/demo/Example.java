@@ -1,4 +1,4 @@
-package tk.microdroid.blueirc.demo;
+package tk.microdroid.blueirc;
 
 import tk.microdroid.blueirc.Channel;
 import tk.microdroid.blueirc.Event;
@@ -11,7 +11,8 @@ public class Example {
 	static Worker worker;
 	
 	public static void main(String[] args) {
-		worker = new Worker("irc.subluminal.net", 6697, "BlueIRCNick", "BlueIRCNick_",
+		
+		worker = new Worker("irc.freenode.net", 6697, "BlueIRCNick", "BlueIRCNick_",
 				"BlueIRCUser", true, true);
 		worker.setEventHandler(new MyHandler());
 		worker.setChannelBufferLength(50);
@@ -36,6 +37,7 @@ public class Example {
 				}
 				System.out.println("Joining #blueirc..");
 				worker.send("JOIN #blueirc");
+				//defaults to true. This module determines if a WHO command will be sent or not on JOIN
 				break;
 			case UNKNOWN_HOST:
 			case UNKNOWN_ERROR:
