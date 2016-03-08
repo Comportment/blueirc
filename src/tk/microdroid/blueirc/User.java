@@ -17,12 +17,7 @@ import java.util.regex.Pattern;
 public class User {
 	static int bufferLength = Integer.MAX_VALUE;
 	//Useful info for each user in the channel. Most of these may not be filled if WHO command is never sent on Channel join
-	private String nick;
-	private String prefix;
-	private String realName;
-	private String hostmask;
-	private String server;
-	private String login;
+	private String nick="", prefix="", realName="", hostmask="", server="", login="";
 	
 	private ArrayList<Parser> messages = new ArrayList<Parser>();
 	
