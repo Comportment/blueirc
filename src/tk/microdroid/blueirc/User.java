@@ -52,38 +52,91 @@ public class User {
 	 * 
 	 * @return User nick
 	 */
-	//Set and get methods for all parameters
 	public String getNick() {
 		return nick;
 	}
 	
+	/**
+	 * Get user ident/login.
+	 * 
+	 * @return User login
+	 */
 	public String getLogin() {
 		return login;
 	}
+	
+	/**
+	 * Get user's server.
+	 * 
+	 * It's the server the user connected on, not the plain url used to connect
+	 * Something like wolfe.freenode.net
+	 * 
+	 * @return Remote server address
+	 */
 	public String getServer() {
 		return server;
 	}
+	
+	/**
+	 * Get user's realname
+	 * 
+	 * @return User's realname
+	 */
 	public String getRealName() {
 		return realName;
 	}
 	
-	public void setLogin(String login) {
+	/**
+	 * Set user's login
+	 * 
+	 * @param login User's login
+	 */
+	void setLogin(String login) {
 		this.login =  login;
 	}
-	public void setHostname(String hostname) {
+	
+	/**
+	 * Set user's hostname
+	 * 
+	 * @param hostname User's hostname
+	 */
+	void setHostname(String hostname) {
 		this.hostmask = hostname;
 	}
-	public void setServer(String server) {
+	
+	/**
+	 * Set user's server
+	 * 
+	 * @param server User's server
+	 */
+	void setServer(String server) {
 		this.server = server;
 	}
-	public void setRealName(String realName) {
+	
+	/**
+	 * Set user's realname
+	 * 
+	 * @param realName The realname
+	 */
+	void setRealName(String realName) {
 		this.realName = realName;
 	}
 	
+	/**
+	 * Check if received a WHO response for this user.
+	 * 
+	 * @return True if we have all the info, otherwise false
+	 */
 	public boolean hasWhoInfo() {
 		return hasWhoInfo;
 	}
-
+	
+	/**
+	 * Return all the informations in a String
+	 * Used for debugging purposes
+	 * 
+	 * @return User's info string
+	 */
 	public String toString(){
 		String output = "Nick: " + nick + " hostmask: " + hostmask + " realName: " + realName + " server: " + server + " prefix: " + prefix ;
 		return output;
