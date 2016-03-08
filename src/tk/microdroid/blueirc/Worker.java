@@ -43,8 +43,8 @@ public class Worker {
 	final static AtomicInteger idGen = new AtomicInteger(0);
 	private int workerId = 0;
 	
-	//defaults to true. This module determines if a WHO command will be sent or not on JOIN
-	private boolean WHOenabled;
+	// Send WHO after NAMES
+	boolean whoEnabled = true;
 
 	Worker thisWorker;
 	ServerInfo serverInfo;
@@ -97,16 +97,10 @@ public class Worker {
 		serverInfo.username = username;
 		serverInfo.ssl = ssl;
 		serverInfo.invalidSSL = invalidSSL;
-		WHOenabled = true; //WHO option is defaulting to true
 		io = new IO();
 		thisWorker = this;
 	}
-public void setWHOSetting(boolean option){
-	this.WHOenabled = option;
-}
-public boolean getWHOSetting(){
-	return WHOenabled;
-}
+	
 	public Worker(ServerInfo info) {
 		serverInfo = info;
 		io = new IO();
@@ -594,6 +588,14 @@ public boolean getWHOSetting(){
 	 */
 	public int getId() {
 		return workerId;
+	}
+
+	public void setWhoEnabled(boolean value){
+		whoEnabled = value;
+	}
+	
+	public boolean isWhoEnabled(){
+		return whoEnabled;
 	}
 	
 	class LagPing extends TimerTask {

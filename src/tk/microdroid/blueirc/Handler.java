@@ -209,7 +209,7 @@ public class Handler {
 						}
 					}
 				}
-				if(w.getWHOSetting()==true){
+				if(w.whoEnabled){
 					w.send("WHO " + p.actionArgs.get(2));
 				}
 				break;
