@@ -202,9 +202,7 @@ public boolean getWHOSetting(){
 					}
 				});
 				writerThread.start();
-				String temp;
-				while ((temp = io.read()) != null) {
-					//System.out.println(temp);
+				while (io.read() != null) {
 					Parser p = new Parser(io.line);
 					eventHandler.onEvent(Event.DATA_RECEIVED, p);
 					Handler.handle(thisWorker, p);
