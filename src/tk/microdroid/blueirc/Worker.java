@@ -590,12 +590,31 @@ public class Worker {
 		return workerId;
 	}
 
+	/**
+	 * Set sending WHO after joining channels
+	 * 
+	 * @param value The new value
+	 */
 	public void setWhoEnabled(boolean value){
 		whoEnabled = value;
 	}
 	
+	/**
+	 * Get sending WHO after joining channels
+	 * 
+	 * @return Whether or not, defaults to true
+	 */
 	public boolean isWhoEnabled(){
 		return whoEnabled;
+	}
+	
+	/**
+	 * Get an ArrayList of channel names
+	 * 
+	 * @return Channels names
+	 */
+	public ArrayList<String> getAllChannelNames() {
+		return new ArrayList<String>(chans.keySet());
 	}
 	
 	class LagPing extends TimerTask {
