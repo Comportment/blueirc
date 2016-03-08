@@ -107,11 +107,11 @@ public class Handler {
 			if (p.nick.equals(w.serverInfo.nick))
 				w.serverInfo.nick = p.msg;
 			for (Channel chan : w.chans.values())
-				for (User user : chan.getUsers().values())
-					if (user.getNick().equals(p.nick))
-						user.updateNick(p.msg);
-			if (w.users.containsKey(p.nick))
-				w.users.get(p.nick).updateNick(p.msg);
+				chan.updateUserNick(p.nick, p.msg);
+			if (w.users.containsKey(p.nick)) {
+				w.users.put(p.msg, w.users.get(p.nick));
+				w.users.remove(p.nick);
+			}
 			break;
 		case "KICK": // Remove channel (If not preserving them) or user in
 						// channel

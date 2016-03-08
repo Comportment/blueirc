@@ -168,4 +168,12 @@ public class Channel {
 		if (users.containsKey(nick))
 			users.remove(nick);
 	}
+	
+	void updateUserNick(String oldNick, String newNick) {
+		if (!users.containsKey(oldNick))
+			return;
+		users.get(oldNick).updateNick(newNick);
+		users.put(newNick, users.get(oldNick));
+		users.remove(oldNick);
+	}
 }
