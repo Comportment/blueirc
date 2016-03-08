@@ -157,19 +157,13 @@ public class Handler {
 			case "352": // Parse WHO response
 				//Sample WHO response:
 				//:leguin.freenode.net 352 BlueIRCNick #blueirc-test ~GitGud unaffiliated/gitgud rajaniemi.freenode.net GitGud H@ :0 Lowlife
-				String ident = null;
-				String hostmask = null;
-				String nick = null;
-				String server = null;
-				String realname = "";
-				String channel = null;
-				realname = p.raw.split(":0 ")[1];
-				ident = p.raw.split(" ")[4];
-				channel = p.raw.split(" ")[3];
-				hostmask = p.raw.split(" ")[5];
-				nick = p.raw.split(" ")[7];
-				server = p.raw.split(" ")[6];
-				realname = p.raw.split(":0 ")[1];
+				String nick = User.parseNick(p.actionArgs.get(0), w.prefixes)[1];
+				String channel = p.actionArgs.get(1);
+				
+				String ident = p.actionArgs.get(2);
+				String hostmask = p.actionArgs.get(3);
+				String server = p.actionArgs.get(4);
+				String realname = p._cmdArgs;
 				// After getting the informations it goes and finds the relevant User by nick (which was already established from NAMES)
 				// And adds the remaining informations on there
 				if (w.chans.containsKey(channel)) {

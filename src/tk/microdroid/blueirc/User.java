@@ -27,19 +27,9 @@ public class User {
 	
 	User(String nick, HashMap<Character, Character> prefixes) {
 		if (prefixes != null) {
-			String prefixesStr = "";
-			for (Character key : prefixes.keySet())
-				prefixesStr += key;
-			Pattern pattern = Pattern.compile("([" + prefixesStr + "]*)(\\w.+)");
-			Matcher matcher = pattern.matcher(nick);
-			boolean matches = matcher.matches();
-			String prefix = matches ? matcher.group(1) : "";
-			String rawName = matches ? matcher.group(2) : nick;
-			for (Character c : prefixes.keySet())
-				if (prefixes.containsKey(c))
-					prefix = prefix.replace(c, prefixes.get(c));
-			this.nick = rawName;
-			this.prefix = prefix;
+			String[] parsedNick = parseNick(nick, prefixes);
+			this.prefix = parsedNick[0];
+			this.nick = parsedNick[1];
 		} else {
 			this.nick = nick;
 			this.prefix = "";
@@ -126,5 +116,20 @@ public class User {
 	 */
 	public void updateNick(String nick) {
 		this.nick = nick;
+	}
+	
+	public static String[] parseNick(String nick, HashMap<Character, Character> prefixes) {
+		String prefixesStr = "";
+		for (Character key : prefixes.keySet())
+			prefixesStr += key;
+		Pattern pattern = Pattern.compile("([" + prefixesStr + "]*)(\\w.+)");
+		Matcher matcher = pattern.matcher(nick);
+		boolean matches = matcher.matches();
+		String prefix = matches ? matcher.group(1) : "";
+		String rawName = matches ? matcher.group(2) : nick;
+		for (Character c : prefixes.keySet())
+			if (prefixes.containsKey(c))
+				prefix = prefix.replace(c, prefixes.get(c));
+		return new String[] {prefix, rawName};
 	}
 }
