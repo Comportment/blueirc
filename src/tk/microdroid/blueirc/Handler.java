@@ -173,13 +173,12 @@ public class Handler {
 				// After getting the informations it goes and finds the relevant User by nick (which was already established from NAMES)
 				// And adds the remaining informations on there
 				if (w.chans.containsKey(channel)) {
-					Channel chan = w.chans.get(channel);
-					User chanUser = chan.getUsers().get(nick);
+					User chanUser = w.chans.get(channel).getUsers().get(nick);
+					chanUser.hasWhoInfo = true;
 					chanUser.setServer(server);
 					chanUser.setHostname(hostmask);
 					chanUser.setRealName(realname);
 					chanUser.setLogin(ident);
-					System.out.println(chanUser.toString());
 				}
 				
 				break;
@@ -209,9 +208,8 @@ public class Handler {
 						}
 					}
 				}
-				if(w.whoEnabled){
+				if(w.whoEnabled)
 					w.send("WHO " + p.actionArgs.get(2));
-				}
 				break;
 			case "005": // Server capabilities, sent upon connection
 				for (String spec : p.actionArgs) {
