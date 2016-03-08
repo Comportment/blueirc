@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public class User {
 	static int bufferLength = Integer.MAX_VALUE;
 	boolean hasWhoInfo = false;
-	private String nick="", prefix="", realName="", hostmask="", server="", login="";
+	private String nick="", prefix="", realName="", hostmask="", server="", username="";
 	private ArrayList<Parser> messages = new ArrayList<Parser>();
 	
 	User(String nick, String prefix) {
@@ -61,8 +61,8 @@ public class User {
 	 * 
 	 * @return User login
 	 */
-	public String getLogin() {
-		return login;
+	public String getUsername() {
+		return username;
 	}
 	
 	/**
@@ -91,8 +91,8 @@ public class User {
 	 * 
 	 * @param login User's login
 	 */
-	void setLogin(String login) {
-		this.login =  login;
+	void setUsername(String username) {
+		this.username = username;
 	}
 	
 	/**

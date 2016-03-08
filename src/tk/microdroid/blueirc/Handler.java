@@ -104,7 +104,7 @@ public class Handler {
 			}
 			break;
 		case "NICK": // Update nicknames upon nicknames change
-			if (p.msg.equals(w.serverInfo.nick))
+			if (p.nick.equals(w.serverInfo.nick))
 				w.serverInfo.nick = p.msg;
 			for (Channel chan : w.chans.values())
 				for (User user : chan.getUsers().values())
@@ -127,8 +127,8 @@ public class Handler {
 						.removeUser(p.actionArgs.get(1));
 				if (!w.preserveUsers) {
 					boolean userStillVisible = false; // i.e. We can see the
-														// user somewhere in the
-														// other channels
+					                                  // user somewhere in the
+													  // other channels
 					for (Channel chan : w.chans.values())
 						userStillVisible = chan.hasUser(p.nick)
 								|| userStillVisible;
@@ -155,12 +155,12 @@ public class Handler {
 		default:
 			switch (p.numberAction) {
 			case "352": // Parse WHO response
-				//Sample WHO response:
-				//:leguin.freenode.net 352 BlueIRCNick #blueirc-test ~GitGud unaffiliated/gitgud rajaniemi.freenode.net GitGud H@ :0 Lowlife
-				String nick = User.parseNick(p.actionArgs.get(0), w.prefixes)[1];
+				// Sample WHO response:
+				// :leguin.freenode.net 352 BlueIRCNick #blueirc-test ~GitGud unaffiliated/gitgud rajaniemi.freenode.net GitGud H@ :0 Lowlife
+				String nick = User.parseNick(p.actionArgs.get(5), w.prefixes)[1];
 				String channel = p.actionArgs.get(1);
 				
-				String ident = p.actionArgs.get(2);
+				String username = p.actionArgs.get(2);
 				String hostmask = p.actionArgs.get(3);
 				String server = p.actionArgs.get(4);
 				String realname = p._cmdArgs;
@@ -172,7 +172,7 @@ public class Handler {
 					chanUser.setServer(server);
 					chanUser.setHostname(hostmask);
 					chanUser.setRealName(realname);
-					chanUser.setLogin(ident);
+					chanUser.setUsername(username);
 				}
 				
 				break;
