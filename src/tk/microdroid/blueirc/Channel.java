@@ -25,7 +25,7 @@ public class Channel {
 	private Date lastJoinDate;
 	private boolean hasLeft = false;
 	
-	Channel(String name) {
+	public Channel(String name) {
 		this.name = name;
 		firstJoinDate = lastJoinDate = new Date();
 	}
