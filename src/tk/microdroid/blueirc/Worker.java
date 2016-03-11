@@ -443,16 +443,15 @@ public class Worker {
 	}
 	
 	/**
-	 * Returns users and channels at once.
+	 * Gets chats as a list of {@code Chatable} object
+	 * The interface has methods to get the type of the 
+	 * Chat, thus you can cast it to User or Channel if needed
 	 * 
-	 * Useful for making a client, use instanceof to check the type 
-	 * of whether it's a user or a channel.
-	 * 
-	 * @return ArrayList of users and channels casted to Object
+	 * @return {@code ArrayList} of {@code Chatable} objects
 	 * 
 	 */
-	public ArrayList<Object> getAllConversations() {
-		ArrayList<Object> result = new ArrayList<Object>();
+	public ArrayList<Chatable> getAllChats() {
+		ArrayList<Chatable> result = new ArrayList<>();
 		for (Channel chan : chans.values())
 			result.add(chan);
 		for (User user : users.values())
