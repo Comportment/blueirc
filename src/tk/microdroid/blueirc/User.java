@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * @see Channel
  * 
  */
-public class User {
+public class User implements Chatable {
 	static int bufferLength = Integer.MAX_VALUE;
 	boolean hasWhoInfo = false;
 	private String nick="", prefix="", realName="", hostmask="", server="", username="";
@@ -171,6 +171,15 @@ public class User {
 		this.nick = nick;
 	}
 	
+	/**
+	 * Separate full user nick into nick and prefix
+	 * The returned array contains prefix as the first element
+	 * And the nick is the second element
+	 * 
+	 * @param nick The full nickname
+	 * @param prefixes Server supported prefixes from 005
+	 * @return A String[] with prefix as first and nick as second
+	 */
 	public static String[] parseNick(String nick, HashMap<Character, Character> prefixes) {
 		String prefixesStr = "";
 		for (Character key : prefixes.keySet())
@@ -184,5 +193,39 @@ public class User {
 			if (prefixes.containsKey(c))
 				prefix = prefix.replace(c, prefixes.get(c));
 		return new String[] {prefix, rawName};
+	}
+
+	/**
+	 * Get chat type
+	 * 
+	 * @return Chat type
+	 */
+	@Override
+	public ChatType getType() {
+		return ChatType.USER;
+	}
+
+	/**
+	 * Get the user nick
+	 * 
+	 * @return user nick
+	 */
+	@Override
+	public String getTitle() {
+		return nick;
+	}
+
+	/**
+	 * Get participants of this chat
+	 * Since this is a private message, there's only
+	 * One participant, this user
+	 * 
+	 * @return HashMap where, nicks are keys and {@code User} as values
+	 */
+	@Override
+	public HashMap<String, User> getParticipants() {
+		HashMap<String, User> participants = new HashMap<>();
+		participants.put(nick, this);
+		return participants;
 	}
 }

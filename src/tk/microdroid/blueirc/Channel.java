@@ -15,7 +15,7 @@ import java.util.List;
  * {@code Channel} instances are stored in an {@code ArrayList} in {@code Worker}.
  * 
  */
-public class Channel {
+public class Channel implements Chatable {
 	static int bufferLength = Integer.MAX_VALUE;
 	private String name;
 	private ArrayList<Parser> messages = new ArrayList<Parser>();
@@ -175,5 +175,35 @@ public class Channel {
 		users.get(oldNick).updateNick(newNick);
 		users.put(newNick, users.get(oldNick));
 		users.remove(oldNick);
+	}
+	
+	/**
+	 * Get the chat type
+	 * 
+	 * @return Chat type
+	 */
+	@Override
+	public ChatType getType() {
+		return ChatType.CHANNEL;
+	}
+	
+	/**
+	 * Get the channel name
+	 * 
+	 * @return Channel name
+	 */
+	@Override
+	public String getTitle() {
+		return name;
+	}
+	
+	/**
+	 * Get channel users
+	 * 
+	 * @return HashMap of users
+	 */
+	@Override
+	public HashMap<String, User> getParticipants() {
+		return users;
 	}
 }
