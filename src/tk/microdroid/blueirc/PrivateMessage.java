@@ -1,8 +1,7 @@
 package tk.microdroid.blueirc;
 
 public class PrivateMessage {
-	String sender;
-	String content;
+	public String sender, content;
 	
 	public PrivateMessage(String sender, String content) {
 		this.sender = sender;
