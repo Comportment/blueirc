@@ -79,7 +79,7 @@ public class Channel implements Chatable {
 	 * 
 	 * @return Chat messages
 	 */
-	public ArrayList<PrivateMessage> getChat() {
+	public ArrayList<PrivateMessage> getChatMessages() {
 		return chat;
 	}
 	

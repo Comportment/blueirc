@@ -250,7 +250,7 @@ public class User implements Chatable {
 	 * 
 	 * @return Chat messages
 	 */
-	public ArrayList<PrivateMessage> getChat() {
+	public ArrayList<PrivateMessage> getChatMessages() {
 		return chat;
 	}
 }
