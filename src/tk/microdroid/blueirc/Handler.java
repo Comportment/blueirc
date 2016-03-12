@@ -194,13 +194,8 @@ public class Handler {
 			case "353": // NAMES response
 				if (w.chans.containsKey(p.actionArgs.get(2))) {
 					Channel chan = w.chans.get(p.actionArgs.get(2));
-					for (String user : p.msg.split(" ")) {
+					for (String user : p.msg.split(" "))
 						chan.addUser(user, w.prefixes);
-						if (!w.users.containsKey(user)) {
-							User newUser = new User(user, w.prefixes);
-							w.users.put(newUser.getNick(), newUser);
-						}
-					}
 				}
 				if(w.whoEnabled)
 					w.send("WHO " + p.actionArgs.get(2));
