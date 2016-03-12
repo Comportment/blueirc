@@ -19,6 +19,7 @@ public class Channel implements Chatable {
 	static int bufferLength = Integer.MAX_VALUE;
 	private String name;
 	private ArrayList<Parser> messages = new ArrayList<Parser>();
+	private ArrayList<PrivateMessage> chat = new ArrayList<>();
 	private HashMap<String, User> users = new HashMap<>();
 	private String topic = "";
 	private Date firstJoinDate;
@@ -53,10 +54,33 @@ public class Channel implements Chatable {
 	 * 
 	 * @param p The Parser object containing the message
 	 */
-	public void addMessage(Parser p) {
+	void addMessage(Parser p) {
 		messages.add(p);
 		while (messages.size() > bufferLength)
 			messages.remove(0);
+		chat.add(new PrivateMessage(p.nick, p.msg));
+	}
+	
+	/**
+	 * Add message sent by this user to the chat
+	 * 
+	 * @param nick Current user nick
+	 * @param msg The message content
+	 */
+	void addSentMessage(String nick, String msg) {
+		chat.add(new PrivateMessage(nick, msg));
+	}
+	
+	/**
+	 * Get chat contents
+	 * This is different from getMessages(), this returns
+	 * The messages said in this channel as well as the ones
+	 * Sent by this user.
+	 * 
+	 * @return Chat messages
+	 */
+	public ArrayList<PrivateMessage> getChat() {
+		return chat;
 	}
 	
 	/**

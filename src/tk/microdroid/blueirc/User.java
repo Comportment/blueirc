@@ -19,6 +19,7 @@ public class User implements Chatable {
 	boolean hasWhoInfo = false;
 	private String nick="", prefix="", realName="", hostmask="", server="", username="";
 	private ArrayList<Parser> messages = new ArrayList<Parser>();
+	private ArrayList<PrivateMessage> chat = new ArrayList<>();
 	
 	User(String nick, String prefix) {
 		this.nick = nick;
@@ -45,6 +46,7 @@ public class User implements Chatable {
 		messages.add(p);
 		while (messages.size() > bufferLength)
 			messages.remove(0);
+		chat.add(new PrivateMessage(p.nick, p.msg));
 	}
 	
 	/**
@@ -227,5 +229,28 @@ public class User implements Chatable {
 		HashMap<String, User> participants = new HashMap<>();
 		participants.put(nick, this);
 		return participants;
+	}
+	
+
+	/**
+	 * Add message sent by this user to the chat
+	 * 
+	 * @param nick Current user nick
+	 * @param msg The message content
+	 */
+	void addSentMessage(String nick, String msg) {
+		chat.add(new PrivateMessage(nick, msg));
+	}
+	
+	/**
+	 * Get chat contents
+	 * This is different from getMessages(), this returns
+	 * The messages said in this channel as well as the ones
+	 * Sent by this user.
+	 * 
+	 * @return Chat messages
+	 */
+	public ArrayList<PrivateMessage> getChat() {
+		return chat;
 	}
 }

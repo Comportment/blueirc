@@ -616,6 +616,28 @@ public class Worker {
 		return new ArrayList<String>(chans.keySet());
 	}
 	
+	/**
+	 * Send a privmsg to {@code target}
+	 * Do NOT use any other method for privmsging!
+	 * If you send privmsgs through any other way then
+	 * Users/Channels messages list won't be updated!
+	 * 
+	 * @param target The target, either a channel or user
+	 * @param msg The message to send to {@code target}
+	 *
+	 */
+	
+	public void privmsg(String target, String msg) {
+		send(IO.privmsg(target, msg));
+		if (chans.containsKey(target)) {
+			chans.get(target).addSentMessage(serverInfo.nick, msg);
+		} else if (!target.startsWith("#")) {
+				if (!users.containsKey(target))
+					users.put(target, new User(target, ""));
+				users.get(target).addSentMessage(serverInfo.nick, msg);
+		}
+	}
+	
 	class LagPing extends TimerTask {
 		@Override
 		public void run() {

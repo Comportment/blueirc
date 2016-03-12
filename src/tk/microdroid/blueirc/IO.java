@@ -66,7 +66,7 @@ public class IO {
 	 * @param data The data to be sent
 	 * @throws IOException When unable to write to the stream
 	 */
-    public void write(String data) throws IOException {
+    void write(String data) throws IOException {
     	try {
     		if (lastWriteTime + rateLimit > System.currentTimeMillis())
     			Thread.sleep((lastWriteTime + rateLimit) - System.currentTimeMillis());
