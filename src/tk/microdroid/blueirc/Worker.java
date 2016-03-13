@@ -247,18 +247,20 @@ public class Worker {
 	/**
 	 * Convert typical user input to a RAW IRC line
 	 * Useful when making a client, pass user input directly to here
+	 * And all the processing is done internally :3
 	 * 
-	 * @param currentWindow Whether a user nick or channel, used to send PRIVMSGs in case {@code msg}
-	 *                      isn't a command
+	 * @param currentChannel Whether a user nick or channel, used to send PRIVMSGs in case {@code msg}
+	 *                       isn't a command
 	 * @param msg The user input
 	 * @return The RAW IRC line, parsed from the user input
 	 */
-	public String parseUserInput(String currentWindow, String msg) {
+	public void parseAndSendUserInput(String currentChannel, String msg) {
+		String parsedInput = "";
 		if (!msg.startsWith("/"))
-			return IO.privmsg(currentWindow, msg);
+			privmsg(currentChannel, msg);
 		else {
 			if (msg.startsWith("//"))
-				return IO.privmsg(currentWindow, msg.substring(1));
+				parsedInput = IO.privmsg(currentChannel, msg.substring(1));
 			else {
 				String[] splitter = msg.split(" ", 2);
 				String cmd = splitter[0];
@@ -266,36 +268,38 @@ public class Worker {
 				switch (cmd) {
 				case "/cs":
 				case "/chanserv":
-					return "PRIVMSG CHANSERV :" + args;
+					parsedInput = "PRIVMSG CHANSERV :" + args;
 				case "/ns":
 				case "/nickserv":
-					return "PRIVMSG NICKSERV :" + args;
+					parsedInput = "PRIVMSG NICKSERV :" + args;
 				case "/privmsg":
 				case "/msg":
-					return "PRIVMSG" + args;
+					parsedInput = "PRIVMSG" + args;
 				case "/close":
 				case "/part":
-					return "PART"
-							+ (args.equals("") ? " " + currentWindow : args);
+					parsedInput = "PART"
+							+ (args.equals("") ? " " + currentChannel : args);
 				case "/quote":
 				case "/raw":
-					return msg;
+					parsedInput = msg;
 				case "/discon":
 				case "/disconnect":
 				case "/bye":
 				case "/quit":
-					return "QUIT :" + args;
+					parsedInput = "QUIT :" + args;
 				case "/ping":
 					if (finishedUserLagMeasurement) {
 						userLagStart = System.currentTimeMillis();
 						finishedUserLagMeasurement = false;
-						return "PING :" + userLagPrefix + (userLagPingId = idGen.incrementAndGet());
-					} else return "";
+						parsedInput = "PING :" + userLagPrefix + (userLagPingId = idGen.incrementAndGet());
+					} else parsedInput = "";
 				default:
-					return cmd.substring(1).toUpperCase() + args;
+					parsedInput = cmd.substring(1).toUpperCase() + args;
 				}
 			}
 		}
+		if (!parsedInput.isEmpty())
+			send(parsedInput);
 	}
 	
 	/**
