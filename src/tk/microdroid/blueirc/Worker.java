@@ -242,6 +242,7 @@ public class Worker {
 		send(IO.compile("NICK", new String[] { nick }, ""));
 		send(IO.compile("USER", new String[] { serverInfo.username, "0", "*" },
 				"MicroIRC Android client"));
+		serverInfo.currentNick = nick;
 	}
 
 	/**

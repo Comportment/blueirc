@@ -12,7 +12,7 @@ import java.io.Serializable;
  */
 public class ServerInfo implements Serializable {
 	private static final long serialVersionUID = -6804167618737848286L;
-	public String server="", nick="", secondNick="", username="", nickservPass="", serverPass="";
+	public String server="", nick="", secondNick="", currentNick="", username="", nickservPass="", serverPass="";
     public int port=6667;
     public boolean ssl=false, invalidSSL=false;
 }

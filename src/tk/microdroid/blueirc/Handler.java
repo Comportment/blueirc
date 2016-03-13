@@ -105,7 +105,7 @@ public class Handler {
 			break;
 		case "NICK": // Update nicknames upon nicknames change
 			if (p.nick.equals(w.serverInfo.nick))
-				w.serverInfo.nick = p.msg;
+				w.serverInfo.currentNick = p.msg;
 			for (Channel chan : w.chans.values())
 				chan.updateUserNick(p.nick, p.msg);
 			if (w.users.containsKey(p.nick)) {
