@@ -235,6 +235,9 @@ public class Handler {
 				if (!w.serverInfo.nickservPass.isEmpty())
 					w.send("PRIVMSG NickServ :IDENTIFY " + w.serverInfo.nickservPass);
 				break;
+			case "464": // Server PASS either not sent or invalid
+				w.eventHandler.onEvent(Event.SERVER_PASS_MISMATCH, p.msg);
+				break;
 			case "366": // Channel joined
 				w.eventHandler.onEvent(Event.JOINED_CHANNEL,
 						p.actionArgs.get(1));
