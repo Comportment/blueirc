@@ -2,6 +2,8 @@ package tk.microdroid.blueirc;
 
 import java.io.IOException;
 
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+
 public class Handler {
 
 	/**
@@ -54,16 +56,21 @@ public class Handler {
 			String capType = p.actionArgs.get(1);
 			if (capType.equals("LS")) {
 				w.ircv3Capabilities = p.msg.split(" ");
-				String[] reqCpbs = { "multi-prefix" }; // Requested capabilities
+				String[] reqCpbs = { "multi-prefix", "sasl" }; // Requested capabilities
 				for (String reqCpb : reqCpbs)
 					if (w.hasCapability(reqCpb))
 						w.send("CAP REQ " + reqCpb);
-				w.send("CAP END");
+				if (!w.hasCapability("sasl"))
+					w.send("CAP END");
 				w.register(w.serverInfo.nick);
-			} else if (capType.equals("NAK"))
+			} else if (capType.equals("NAK")) {
 				w.eventHandler.onEvent(Event.IRCV3_CAPABILITY_REJECTED, p.msg);
-			else if (capType.equals("ACK"))
+			} else if (capType.equals("ACK")) {
 				w.eventHandler.onEvent(Event.IRCV3_CAPABILITY_ACCEPTED, p.msg);
+				if (p.msg.equals("sasl") && !w.serverInfo.saslUsername.isEmpty()
+						&& !w.serverInfo.saslPassword.isEmpty())
+					w.send("AUTHENTICATE PLAIN");
+			}
 			break;
 		case "JOIN": // Create new Channel
 			if (p.nick.equals(w.usingSecondNick ? w.serverInfo.secondNick
@@ -151,6 +158,10 @@ public class Handler {
 		case "NOTICE":
 			if (p.msg.toLowerCase().equals("*** no ident response") && !w.connected)
 				w.register(w.serverInfo.nick);
+			break;
+		case "AUTHENTICATE": // SASL start of authentication
+			if (p.msg.equals("+"))
+				w.send(Base64.encode((w.serverInfo.saslUsername + "\0" + w.serverInfo.saslUsername + "\0" + w.serverInfo.saslPassword).getBytes()));
 			break;
 		default:
 			switch (p.numberAction) {
@@ -254,6 +265,7 @@ public class Handler {
 				break;
 			}
 			break;
+			
 		}
 	}
 }

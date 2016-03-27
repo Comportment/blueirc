@@ -645,6 +645,19 @@ public class Worker {
 		}
 	}
 	
+	/**
+	 * Set SASL credentials
+	 * When the credentials aren't set, sasl capability
+	 * Isn't requested.
+	 * 
+	 * @param username SASL Username
+	 * @param password SASL Password
+	 */
+	public void setSASLCredentials(String username, String password) {
+		serverInfo.saslUsername = username;
+		serverInfo.saslPassword = password;
+	}
+	
 	class LagPing extends TimerTask {
 		@Override
 		public void run() {

@@ -45,15 +45,23 @@ public class Parser {
 			line = line.trim();
 			String[] lineWords = line.split(" ");
 			if (!line.startsWith(":")) {
+				hasIdent = false;
 				type = MessageType.OTHER;
-				String[] splitter = line.split(" :", 2);
-				String[] splitter2 = splitter[0].split(" ");
-				action = splitter2[0];
-				for (int i=1; i < splitter2.length; i++)
-					actionArgs.add(splitter2[i]);
-				msg = splitter[1];
-				if (splitter2.length == 2)
-					_cmdArgs = splitter2[1];
+				if (line.contains(" :")) {
+					String[] splitter = line.split(" :", 2);
+					String[] splitter2 = splitter[0].split(" ");
+					action = splitter2[0];
+					for (int i=1; i < splitter2.length; i++)
+						actionArgs.add(splitter2[i]);
+					msg = splitter[1];
+					if (splitter2.length == 2)
+						_cmdArgs = splitter2[1];
+				} else if (lineWords.length == 2) {
+					String[] splitter = line.split(" ", 2);
+					action = lineWords[0];
+					cmd = lineWords[1];
+					msg = splitter[0];
+				}
 			} else if (lineWords.length >= 3) {
 				if (lineWords[1].matches("\\d\\d\\d")) { // Must be 3 digits, as in rfc1459#section-2.4
 					type = MessageType.NUMERIC;
