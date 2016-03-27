@@ -177,6 +177,8 @@ public class Worker {
 					socket = new Socket(serverInfo.server, serverInfo.port);
 				}
 				io.initialize(serverInfo.ssl ? sslSocket : socket);
+				if (!serverInfo.serverPass.isEmpty())
+					send("PASS " + serverInfo.serverPass);
 				send("CAP LS");
 				// Writes data in writingQueue to the socket
 				writerThread = new Thread(new Runnable() {
