@@ -229,6 +229,11 @@ public class Handler {
 				w.motd.trimToSize();
 				w.eventHandler.onEvent(Event.GOT_MOTD, w.motd.toString()
 						.substring(1));
+				// NOTICE THERE'S NO BREAK HERE! SO EXECUTION CONTINUES TO 442
+			case "422": // MOTD is missing
+				// Here things are executed when either 442 or 376
+				if (!w.serverInfo.nickservPass.isEmpty())
+					w.send("PRIVMSG NickServ :IDENTIFY " + w.serverInfo.nickservPass);
 				break;
 			case "366": // Channel joined
 				w.eventHandler.onEvent(Event.JOINED_CHANNEL,
