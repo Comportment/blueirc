@@ -1,6 +1,7 @@
 package tk.microdroid.blueirc;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 
@@ -60,16 +61,22 @@ public class Handler {
 				for (String reqCpb : reqCpbs)
 					if (w.hasCapability(reqCpb))
 						w.send("CAP REQ " + reqCpb);
-				if (!w.hasCapability("sasl"))
+				if (!w.hasCapability("sasl")) {
 					w.send("CAP END");
-				w.register(w.serverInfo.nick);
+					w.register(w.serverInfo.nick);
+				}
 			} else if (capType.equals("NAK")) {
 				w.eventHandler.onEvent(Event.IRCV3_CAPABILITY_REJECTED, p.msg);
 			} else if (capType.equals("ACK")) {
 				w.eventHandler.onEvent(Event.IRCV3_CAPABILITY_ACCEPTED, p.msg);
 				if (p.msg.equals("sasl") && !w.serverInfo.saslUsername.isEmpty()
-						&& !w.serverInfo.saslPassword.isEmpty())
+						&& !w.serverInfo.saslPassword.isEmpty()) {
 					w.send("AUTHENTICATE PLAIN");
+				}
+				else {
+					w.send("CAP END");
+					w.register(w.serverInfo.nick);
+				}
 			}
 			break;
 		case "JOIN": // Create new Channel
@@ -265,7 +272,38 @@ public class Handler {
 				break;
 			}
 			break;
-			
+			case "900":
+				w.eventHandler.onEvent(Event.SASL_LOGGED_IN, p.actionArgs.get(2));
+				break;
+			case "901":
+				w.eventHandler.onEvent(Event.SASL_LOGGED_OUT, p.actionArgs.get(1));
+				break;
+			case "902":
+				w.eventHandler.onEvent(Event.SASL_NICK_LOCKED, p.actionArgs.get(0));
+				break;
+			case "903":
+				w.eventHandler.onEvent(Event.SASL_SUCCESS, p.actionArgs.get(0));
+				w.send("CAP END");
+				w.register(w.serverInfo.nick);
+				break;
+			case "904":
+				w.eventHandler.onEvent(Event.SASL_FAIL, p.actionArgs.get(0));
+				w.send("CAP END");
+				w.register(w.serverInfo.nick);
+				break;
+			case "905":
+				w.eventHandler.onEvent(Event.SASL_TOO_LONG, p.actionArgs.get(0));
+				break;
+			case "906":
+				w.eventHandler.onEvent(Event.SASL_ABORTED, p.actionArgs.get(0));
+				break;
+			case "907":
+				w.eventHandler.onEvent(Event.SASL_ALREADY, p.actionArgs.get(0));
+				break;
+			case "908":
+				List<String> mechs = p.actionArgs;
+				mechs.remove(0);
+				w.eventHandler.onEvent(Event.SASL_MECHS, mechs);
 		}
 	}
 }
