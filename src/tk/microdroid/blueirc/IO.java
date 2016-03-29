@@ -68,7 +68,7 @@ public class IO {
 	 */
     void write(String data) throws IOException {
     	try {
-    		if (lastWriteTime + rateLimit > System.currentTimeMillis())
+    		if ((lastWriteTime + rateLimit > System.currentTimeMillis()) && throttlingEnabled)
     			Thread.sleep((lastWriteTime + rateLimit) - System.currentTimeMillis());
     	} catch (InterruptedException e) { throw new IOException("Writing thread interrupted"); }
         if (data.length() > 508)
