@@ -262,11 +262,11 @@ public class Handler {
 				break;
 			case "433": // Nickname in use
 				if (!w.usingSecondNick) {
+					w.usingSecondNick = true;
 					w.eventHandler.onEvent(Event.FIRST_NICK_IN_USE,
 							w.serverInfo.nick);
 					w.register(w.serverInfo.secondNick);
 				} else {
-					w.usingSecondNick = true;
 					w.eventHandler.onEvent(Event.ALL_NICKS_IN_USE,
 							w.serverInfo.secondNick);
 				}
