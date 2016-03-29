@@ -266,6 +266,7 @@ public class Handler {
 							w.serverInfo.nick);
 					w.register(w.serverInfo.secondNick);
 				} else {
+					w.usingSecondNick = true;
 					w.eventHandler.onEvent(Event.ALL_NICKS_IN_USE,
 							w.serverInfo.secondNick);
 				}
