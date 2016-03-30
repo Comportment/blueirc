@@ -186,7 +186,7 @@ public class User implements Chatable {
 		String prefixesStr = "";
 		for (Character key : prefixes.keySet())
 			prefixesStr += key;
-		Pattern pattern = Pattern.compile("([" + prefixesStr + "]*)(\\w.+)");
+		Pattern pattern = Pattern.compile("([" + prefixesStr + "]*)(.+)");
 		Matcher matcher = pattern.matcher(nick);
 		boolean matches = matcher.matches();
 		String prefix = matches ? matcher.group(1) : "";

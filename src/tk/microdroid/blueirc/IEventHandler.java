@@ -21,10 +21,22 @@ public interface IEventHandler {
      * CERTIFICATE_PINNING_FAIL  -> String                 -> Reason
      * CERTIFICATE_PINNING_START -> String                 -> Informations with public key
      * CONNECTED                 -> String                 -> Server URL
+     * DATA_RECEIVED             -> Parser                 -> Parser object containing everything
+     * DATA_SEND_FAIL            -> Message                -> The unsent message with it's ID
+     * DATA_SENT                 -> Message                -> The sent message with it's ID
      * DISCONNECTED              -> String                 -> Server URL
      * FIRST_NICK_IN_USE         -> String                 -> The first nick
      * GOT_SERVER_NAME           -> String                 -> The server name
      * GOT_MOTD                  -> String                 -> The new motd
+     * SASL_ALREADY              -> String                 -> The nickname
+     * SASL_FAIL                 -> String                 -> The nickname
+     * SASL_LOGGED_IN            -> String                 -> Account name
+     * SASL_LOGGED_OUT           -> String                 -> nick!ident@host
+     * SASL_MECHS                -> List                   -> List of supported mechanisms
+     * SASL_NICK_LOCKED          -> String                 -> The locked nick
+     * SASL_SUCCESS              -> String                 -> The nickname
+     * SASL_TOO_LONG             -> String                 -> The nickname
+     * SERVER_PASS_MISMTACH      -> String                 -> Reason
      * SSL_CERTIFICATE_REFUSED   -> IOException            -> The exception object
      * IRCV3_CAPABILITY_ACCEPTED -> String                 -> The accepted capabilities
      * IRCV3_CAPABILITY_REJECTED -> String                 -> The rejected capabilities
@@ -36,8 +48,5 @@ public interface IEventHandler {
      * UNKNOWN_ERROR             -> IOException            -> The exception object
      * UNKNOWN_HOST              -> UnknownHostException   -> The exception object
      * USER_LAG_MEASURED         -> long                   -> Lag in milliseconds
-     * DATA_RECEIVED             -> Parser                 -> Parser object containing everything
-     * DATA_SEND_FAIL            -> Message                -> The unsent message with it's ID
-     * DATA_SENT                 -> Message                -> The sent message with it's ID
      */
 }
