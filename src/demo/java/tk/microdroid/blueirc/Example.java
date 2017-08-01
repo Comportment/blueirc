@@ -21,9 +21,7 @@ public class Example {
                     System.out.println("Connected to: " + args); // Remember to check the reference for
                     // args type
                     if (worker.isSupportsIrcv3()) {
-                        StringBuilder sb = new StringBuilder();
-                        Arrays.stream(worker.getIrcv3Capabilities()).forEach(cap -> sb.append(cap).append(", "));
-                        System.out.println(("This server supports IRCv3 with the following capabilities: " + sb).trim());
+                        System.out.println(("This server supports IRCv3 with the following capabilities: " + Arrays.stream(worker.getIrcv3Capabilities()).collect(Collectors.joining(", "))).trim());
                     }
                     System.out.println("Joining #blueirc..");
                     worker.send("JOIN #blueirc");
