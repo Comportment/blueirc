@@ -72,7 +72,9 @@ public class Parser {
 						msg = splitter[1];
 						String[] splitter2 = msg.split(" ", 2);
 						cmd = splitter2[0];
-						Util.addSplitArgs(cmdArgs, splitter2[1]);
+						String tempArgs = "";
+						if (splitter2.length == 2) tempArgs = splitter2[1];
+						Util.addSplitArgs(cmdArgs, tempArgs);
 
 					} else {
 					    Util.addSplitArgs(actionArgs, afterNumber);

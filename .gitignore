@@ -6,4 +6,4 @@
 *.iml
 
 # Build files
-build/
+built/
