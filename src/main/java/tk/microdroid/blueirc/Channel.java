@@ -56,10 +56,7 @@ public class Channel {
 	 * @param p The Parser object containing the message
 	 */
 	public void addMessage(Parser p) {
-		messages.add(p);
-		while (messages.size() > bufferLength) {
-			messages.remove(0);
-		}
+        Util.addMessage(bufferLength, messages, p);
 	}
 	
 	/**

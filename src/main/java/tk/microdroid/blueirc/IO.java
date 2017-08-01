@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import javax.net.ssl.SSLSocket;
 
@@ -17,8 +18,8 @@ import javax.net.ssl.SSLSocket;
  * in {@code Worker}
  */
 public class IO {
-    BufferedWriter writer;
-    BufferedReader reader;
+    private BufferedWriter writer;
+    private BufferedReader reader;
     String line;
 
 	public IO(Socket socket) throws IOException {
@@ -56,10 +57,14 @@ public class IO {
 	 * @throws IOException When unable to write to the stream
 	 */
     public void write(String data) throws IOException {
-        if (data.length() > 510)
-            data = data.substring(0, 510);
-        for (String line : data.split("\n"))
-            writer.write(line + "\r\n");
+        if (data.length() > 510) data = data.substring(0, 510);
+		Arrays.stream(data.split("\n")).forEach(line -> {
+			try {
+				writer.write(line + "\r\n");
+			} catch (IOException e) {
+				System.err.println("Error occurred when writing a line to the writer.\n\r" + line);
+			}
+		});
         writer.flush();
     }
     
@@ -69,7 +74,7 @@ public class IO {
      * @param cmd The IRC command
      * @param args IRC command arguments
      * @param msg IRC command's data that comes after the ' :'
-     * @return
+     * @return The IRC command
      */
     public static String compile(String cmd, String[] args, String msg) {
         return cmd + " " + concat(args, " ") + (!msg.equals("") ? " :" + msg : "");
@@ -87,18 +92,17 @@ public class IO {
     public static String privmsg(String target, String msg) {
     	if (msg.contains("\n")) {
     		StringBuilder result = new StringBuilder();
-    		for (String message : msg.split("\n"))
-    			result.append(privmsg(target, message) + "\n");
-    		return result.toString().trim();
+			Arrays.stream(msg.split("\n")).forEach(message -> result.append(privmsg(target, message)).append("\n"));
+    		return (result + "").trim();
     	} else if ((target + msg).length() > 498) {
-            return compile("PRIVMSG", new String[] {target}, msg.substring(0, (510 - target.length())))
-                    + "\n" + privmsg(target, msg.substring(510 - target.length()));
-        } else
-            return compile("PRIVMSG", new String[] {target}, msg);
+            return compile("PRIVMSG", new String[]{target}, String.join("\n", msg.substring(0, (510 - target.length())), privmsg(target, msg.substring(510 - target.length()))));
+        } else {
+			return compile("PRIVMSG", new String[]{target}, msg);
+		}
     }
     
     /**
-     * Concats a {@code String[]} to {@code String}
+     * Concatenates a {@code String[]} to {@code String}
      * Delimited by {@code delimiter}
      *  
      * @param array The array that contains the Strings
@@ -107,8 +111,7 @@ public class IO {
      */
     public static String concat(String[] array, String delimiter) {
     	StringBuilder sb = new StringBuilder();
-    	for (String element : array)
-    		sb.append(delimiter + element);
-    	return sb.toString().substring(delimiter.length());
+		Arrays.stream(array).forEach(element -> sb.append(delimiter).append(element));
+    	return (sb + "").substring(delimiter.length());
     }
 }

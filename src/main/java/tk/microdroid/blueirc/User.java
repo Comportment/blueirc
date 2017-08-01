@@ -18,7 +18,7 @@ public class User {
 	User(String nick, String prefix) {
 		this.nick = nick;
 		this.prefix = prefix;
-		messages = new ArrayList<Parser>();
+		messages = new ArrayList<>();
 	}
 	
 	/**
@@ -27,9 +27,7 @@ public class User {
 	 * @param p The parser that contains the message
 	 */
 	public void addMessage(Parser p) {
-		messages.add(p);
-		while (messages.size() > bufferLength)
-			messages.remove(0);
+		Util.addMessage(bufferLength, messages, p);
 	}
 	
 	/**

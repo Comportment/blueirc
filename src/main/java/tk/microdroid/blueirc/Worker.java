@@ -44,16 +44,10 @@ public class Worker {
 	private Thread mainThread;
 	private IO io;
 
-	private IEventHandler eventHandler = new IEventHandler() {
-		@Override
-		public void onEvent(Event event, Object args) {
-			// Nothing.
-		}
-	};
+	private IEventHandler eventHandler = (event, args) -> {};
 	private Socket socket;
 	private SSLSocket sslSocket;
-	private BlockingQueue<Message> writingQueue = new ArrayBlockingQueue<Message>(
-			32);
+	private BlockingQueue<Message> writingQueue = new ArrayBlockingQueue<>(32);
 	private boolean usingSecondNick = false;
 
 	private boolean ircv3Support = false;

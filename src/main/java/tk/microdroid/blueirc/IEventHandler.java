@@ -9,8 +9,8 @@ package tk.microdroid.blueirc;
  * See the reference below, it's also on the wiki on Github
  */
 public interface IEventHandler {
-    public void onEvent(Event event, Object args);
-    
+
+    void onEvent(Event event, Object args);
     /*
      * event                     -> typeof(args)           -> Description
      * 
