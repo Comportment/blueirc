@@ -1,11 +1,4 @@
-package tk.microdroid.blueirc_demo;
-
-import tk.microdroid.blueirc.Channel;
-import tk.microdroid.blueirc.Event;
-import tk.microdroid.blueirc.IEventHandler;
-import tk.microdroid.blueirc.IO;
-import tk.microdroid.blueirc.Parser;
-import tk.microdroid.blueirc.Worker;
+package tk.microdroid.blueirc;
 
 public class Example {
 	static Worker worker;
