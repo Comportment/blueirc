@@ -31,7 +31,6 @@ public class Parser {
 	private String action = "";
 	private String msg = "";
 	private String cmd = "";
-	private String _cmdArgs = "";
 	private List<String> actionArgs = new ArrayList<>();
 	private List<String> cmdArgs = new ArrayList<>();
 
@@ -54,11 +53,10 @@ public class Parser {
 				action = splitter2[0];
 				actionArgs.addAll(Arrays.asList(splitter2));
 				msg = splitter[1];
-				if (splitter2.length == 2) {
-					_cmdArgs = splitter2[1];
-				}
+				//if (splitter2.length == 2) {
+					//_cmdArgs = splitter2[1];
+				//}
 			} else if (lineWords.length >= 3) {
-
 				if (lineWords[1].matches("\\d\\d\\d")) {
 					type = MessageType.NUMERIC;
 					server = lineWords[0].substring(1);
@@ -69,19 +67,15 @@ public class Parser {
 						String[] splitter = afterNumber.split(" :", 2);
 
 						if (!splitter[0].isEmpty()) {
-							actionArgs.addAll(Arrays.asList(splitter[0].split(" ")));
+						    Util.addSplitArgs(actionArgs, splitter[0]);
 						}
 						msg = splitter[1];
 						String[] splitter2 = msg.split(" ", 2);
 						cmd = splitter2[0];
-
-						if (splitter2.length == 2) {
-							_cmdArgs = splitter2[1];
-						}
-						cmdArgs.addAll(Arrays.asList(_cmdArgs.split(" ")));
+						Util.addSplitArgs(cmdArgs, splitter2[1]);
 
 					} else {
-						actionArgs.addAll(Arrays.asList(afterNumber.split(" ")));
+					    Util.addSplitArgs(actionArgs, afterNumber);
 					}
 				} else {
 					type = MessageType.ACTION;
@@ -101,19 +95,18 @@ public class Parser {
 					if (afterAction.contains(" :")) {
 						String[] splitter = afterAction.split(" :", 2);
 						if (!splitter[0].isEmpty()) {
-							actionArgs.addAll(Arrays.asList(splitter[0].split(" ")));
+						    Util.addSplitArgs(actionArgs, splitter[0]);
 						}
 						if (splitter.length == 2) {
 							msg = splitter[1];
 							String[] splitter2 = msg.split(" ", 2);
 							cmd = splitter2[0];
 							if (splitter2.length == 2) {
-								_cmdArgs = splitter2[1];
-								cmdArgs.addAll(Arrays.asList(_cmdArgs.split(" ")));
+								Util.addSplitArgs(cmdArgs, splitter2[1]);
 							}
 						}
 					} else {
-						cmdArgs.addAll(Arrays.asList(afterAction.split(" ")));
+					    Util.addSplitArgs(cmdArgs, afterAction);
 					}
 				}
 			} else {
