@@ -8,20 +8,12 @@ public class Example {
     public static void main(String[] args) {
         worker = new Worker("irc.subluminal.net", 6667, "BlueIRCNick", "BlueIRCNick_",
                 "BlueIRCUser", "", "", false, false);
-        worker.setEventHandler(new MyHandler());
-        worker.setChannelBufferLength(50);
-        worker.setUserBufferLength(50);
-        System.out.print("Connecting...");
-        worker.start();
-    }
 
-    static class MyHandler implements IEventHandler {
-        @Override
-        public void onEvent(Event event, Object args) {
+        worker.setEventHandler((event, argz) -> {
             switch (event) {
                 case CONNECTED:
-                    System.out.println("Connected to: " + args); // Remember to check the reference for
-                    // args type
+                    System.out.println("Connected to: " + argz); // Remember to check the reference for
+                    // argz type
                     if (worker.isSupportsIrcv3()) {
                         StringBuilder sb = new StringBuilder();
                         Arrays.stream(worker.getIrcv3Capabilities()).forEach(cap -> sb.append(cap).append(", "));
@@ -36,29 +28,29 @@ public class Example {
                     System.out.println("Whoops! crashed! " + event);
                     break;
                 case DISCONNECTED: {
-                    System.out.println("Disconnected from: " + args);
+                    System.out.println("Disconnected from: " + argz);
                     break;
                 }
                 case GOT_SERVER_NAME: {
-                    System.out.println("Server name is: " + args);
+                    System.out.println("Server name is: " + argz);
                     break;
                 }
                 case GOT_MOTD: {
                     System.out.println("Got motd!");
-                    System.out.println(args);
+                    System.out.println(argz);
                     break;
                 }
                 case JOINED_CHANNEL: {
-                    System.out.println("Joined: " + args);
-                    Channel channel = worker.getChannel((String) args);
-                    System.out.println("Topic for " + (args + ": " + channel.getTopic()));
+                    System.out.println("Joined: " + argz);
+                    Channel channel = worker.getChannel((String) argz);
+                    System.out.println("Topic for " + (argz + ": " + channel.getTopic()));
                     StringBuilder sb = new StringBuilder();
                     channel.getUsers().keySet().forEach(usr -> sb.append(usr).append(", "));
-                    System.out.println(String.format("Users of %s: %s", args, sb.toString().trim()));
+                    System.out.println(String.format("Users of %s: %s", argz, sb.toString().trim()));
                     break;
                 }
                 case DATA_RECEIVED: { // You handle ACTION-based events (Like when receiving an INVITE) here
-                    Parser p = (Parser) args;
+                    Parser p = (Parser) argz;
                     switch (p.getAction()) {
                         case "INVITE": {
                             worker.send("JOIN " + p.getMsg());
@@ -76,10 +68,14 @@ public class Example {
                     break;
                 }
                 case LAG_MEASURED: {
-                    System.out.println(String.format("Current server lag %s ms", args));
+                    System.out.println(String.format("Current server lag %s ms", argz));
                     break;
                 }
             }
-        }
+        });
+        worker.setChannelBufferLength(50);
+        worker.setUserBufferLength(50);
+        System.out.print("Connecting...");
+        worker.start();
     }
 }
