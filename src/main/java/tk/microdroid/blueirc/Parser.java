@@ -1,6 +1,7 @@
 package tk.microdroid.blueirc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -16,18 +17,23 @@ import java.util.regex.Pattern;
  *
  */
 public class Parser {
-	public MessageType type;
-	public boolean failed = false;
+	private MessageType type;
+	private boolean failed = false;
 
 	// _cmdArgs is command arguments without splitting
-	public boolean hasIdent;
-	public String raw, server, numberAction, nick, username, host;
-	public String action;
-	public String msg;
-	public String cmd;
-	public String _cmdArgs;
-	public List<String> actionArgs = new ArrayList<>();
-	public List<String> cmdArgs = new ArrayList<>();
+	private boolean hasIdent = false;
+	private String raw = "";
+	private String server = "";
+	private String numberAction = "";
+	private String nick = "";
+	private String username = "";
+	private String host = "";
+	private String action = "";
+	private String msg = "";
+	private String cmd = "";
+	private String _cmdArgs = "";
+	private List<String> actionArgs = new ArrayList<>();
+	private List<String> cmdArgs = new ArrayList<>();
 
 	/**
 	 * Parses an IRC command received from server.
@@ -37,42 +43,45 @@ public class Parser {
 	public Parser(String line) {
 		try {
 			raw = line;
-			failed = false;
-			server = numberAction = nick = username = host = action = msg = cmd = _cmdArgs = "";
 			hasIdent = true;
 			line = line.trim();
 			String[] lineWords = line.split(" ");
+
 			if (!line.startsWith(":")) {
 				type = MessageType.OTHER;
 				String[] splitter = line.split(" :", 2);
 				String[] splitter2 = splitter[0].split(" ");
 				action = splitter2[0];
-				for (int i=1; i < splitter2.length; i++)
-					actionArgs.add(splitter2[i]);
+				actionArgs.addAll(Arrays.asList(splitter2));
 				msg = splitter[1];
-				if (splitter2.length == 2)
+				if (splitter2.length == 2) {
 					_cmdArgs = splitter2[1];
+				}
 			} else if (lineWords.length >= 3) {
+
 				if (lineWords[1].matches("\\d\\d\\d")) {
 					type = MessageType.NUMERIC;
 					server = lineWords[0].substring(1);
 					numberAction = lineWords[1];
 					String afterNumber = line.split(Pattern.quote(numberAction), 2)[1].trim();
+
 					if (afterNumber.contains(" :")) {
 						String[] splitter = afterNumber.split(" :", 2);
-						if (!splitter[0].isEmpty())
-							for (String actionArg : splitter[0].split(" "))
-								actionArgs.add(actionArg);
+
+						if (!splitter[0].isEmpty()) {
+							actionArgs.addAll(Arrays.asList(splitter[0].split(" ")));
+						}
 						msg = splitter[1];
 						String[] splitter2 = msg.split(" ", 2);
 						cmd = splitter2[0];
-						if (splitter2.length == 2)
+
+						if (splitter2.length == 2) {
 							_cmdArgs = splitter2[1];
-						for (String cmdArg : _cmdArgs.split(" "))
-							cmdArgs.add(cmdArg);
+						}
+						cmdArgs.addAll(Arrays.asList(_cmdArgs.split(" ")));
+
 					} else {
-						for (String actionArg : afterNumber.split(" "))
-							actionArgs.add(actionArg);
+						actionArgs.addAll(Arrays.asList(afterNumber.split(" ")));
 					}
 				} else {
 					type = MessageType.ACTION;
@@ -81,37 +90,39 @@ public class Parser {
 						nick = splitter[0].substring(1);
 						username = splitter[1];
 						host = splitter[2];
-					} else hasIdent = false;
+					} else {
+						hasIdent = false;
+					}
 					action = lineWords[1];
 					String afterAction = line.split(Pattern.quote(action), 2)[1];
-					if (!afterAction.startsWith(" :"))
+					if (!afterAction.startsWith(" :")) {
 						afterAction = afterAction.substring(1);
+					}
 					if (afterAction.contains(" :")) {
 						String[] splitter = afterAction.split(" :", 2);
-						if (!splitter[0].isEmpty())
-							for (String actionArg : splitter[0].split(" "))
-								actionArgs.add(actionArg);
+						if (!splitter[0].isEmpty()) {
+							actionArgs.addAll(Arrays.asList(splitter[0].split(" ")));
+						}
 						if (splitter.length == 2) {
 							msg = splitter[1];
 							String[] splitter2 = msg.split(" ", 2);
 							cmd = splitter2[0];
 							if (splitter2.length == 2) {
 								_cmdArgs = splitter2[1];
-								for (String cmdArg : _cmdArgs.split(" "))
-									cmdArgs.add(cmdArg);
+								cmdArgs.addAll(Arrays.asList(_cmdArgs.split(" ")));
 							}
 						}
 					} else {
-						for (String actionArg : afterAction.split(" "))
-							actionArgs.add(actionArg);
+						cmdArgs.addAll(Arrays.asList(afterAction.split(" ")));
 					}
 				}
 			} else {
 				type = MessageType.UNKNOWN;
 				failed = true;
 			}
-			if (msg.equals("") && actionArgs.size() == 1)
+			if (msg.equals("") && actionArgs.size() == 1) {
 				msg = actionArgs.get(0);
+			}
 		} catch (Exception e) {
 			type = MessageType.UNKNOWN;
 			e.printStackTrace();
