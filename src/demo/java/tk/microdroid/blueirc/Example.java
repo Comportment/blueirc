@@ -47,6 +47,7 @@ public class Example {
                 case JOINED_CHANNEL: {
                     System.out.println("Joined: " + args);
                     Channel channel = worker.getChannel((String) args);
+                    worker.send("TOPIC" + channel.getName());
                     System.out.println("Topic for " + (args + ": " + channel.getTopic()));
                     System.out.println(String.format("Users of %s: %s", args, channel.getUsers().keySet().stream().collect(Collectors.joining(", "))));
                     break;
@@ -77,7 +78,7 @@ public class Example {
         });
         worker.setChannelBufferLength(50);
         worker.setUserBufferLength(50);
-        System.out.print("Connecting...");
+        System.out.println("Connecting...");
         worker.start();
     }
 }

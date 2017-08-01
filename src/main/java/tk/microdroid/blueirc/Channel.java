@@ -22,13 +22,14 @@ public class Channel {
 	private String name = "";
 	private ArrayList<Parser> messages = new ArrayList<>();
 	private HashMap<String, User> users = new HashMap<>();
-	private String topic = "";
+	private String topic = "unknown";
 	private Date firstJoinDate = null;
 	private Date lastJoinDate = null;
 	private boolean hasLeft = false;
 	
-	Channel(String name) {
+	Channel(Worker worker, String name) {
 		this.name = name;
+		worker.send("TOPIC " + name);
 		firstJoinDate = lastJoinDate = new Date();
 	}
 	
