@@ -9,7 +9,7 @@ public class Example {
 		worker.setEventHandler(new MyHandler());
 		worker.setChannelBufferLength(50);
 		worker.setUserBufferLength(50);
-		System.out.print("Connecting.. ");
+		System.out.print("Connecting...");
 		worker.start();
 	}
 	
@@ -18,7 +18,7 @@ public class Example {
 		public void onEvent(Event event, Object args) {
 			switch (event) {
 			case CONNECTED:
-				System.out.println("Connected to " + (String)args); // Remember to check the reference for
+				System.out.println("Connected to: " + args); // Remember to check the reference for
 				                                                    // args type
 				if (worker.isSupportsIrcv3()) {
 					StringBuilder sb = new StringBuilder();
@@ -56,15 +56,15 @@ public class Example {
 				break;
 			case DATA_RECEIVED: // You handle ACTION-based events (Like when receiving an INVITE) here
 				Parser p = (Parser)args;
-				switch (p.action) {
+				switch (p.getAction()) {
 				case "INVITE":
-					worker.send("JOIN " + p.msg);
+					worker.send("JOIN " + p.getMsg());
 					break;
 				case "PRIVMSG":
-					if (p.actionArgs.get(0).equals(worker.getServerInfo().nick)) // i.e. PRIVMSGed us
+					if (p.getActionArgs().get(0).equals(worker.getServerInfo().nick)) // i.e. PRIVMSGed us
 						// IO.compile generates an IRC command depending on ACTION, ARGUMENTS[], and MSG
 						// Where MSG is the part that comes after ' :'
-						worker.send(IO.compile("PRIVMSG", new String[] {p.nick}, "I am a bot, idk how to respond"));
+						worker.send(IO.compile("PRIVMSG", new String[] {p.getNick()}, "I am a bot, idk how to respond"));
 					break;
 				}
 				break;

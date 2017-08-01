@@ -158,21 +158,21 @@ public class Worker {
 				while (io.read() != null) {
 					Parser p = new Parser(io.line);
 					eventHandler.onEvent(Event.DATA_RECEIVED, p);
-					if (p.action.equals("PING")) {
+					if (p.getAction().equals("PING")) {
 						send("PONG" + io.line.substring(4));
-					} else if (p.action.equals("PONG") && p.msg.equals("blueirc." + lagPingId)) { // Used in lag measurement
+					} else if (p.getAction().equals("PONG") && p.getMsg().equals("blueirc." + lagPingId)) { // Used in lag measurement
 						finishedLagMeasurement = true;
 						lag = System.currentTimeMillis() - lagStart;
 						eventHandler.onEvent(Event.LAG_MEASURED, lag);
-					} else if (p.action.equals("PRIVMSG") && p.actionArgs.get(0).startsWith("#")) { // Add new message to chan and user
-						Channel chan = chans.get(p.actionArgs.get(0));
-						chan.getUsers().get(p.nick).addMessage(p);
+					} else if (p.getAction().equals("PRIVMSG") && p.getActionArgs().get(0).startsWith("#")) { // Add new message to chan and user
+						Channel chan = chans.get(p.getActionArgs().get(0));
+						chan.getUsers().get(p.getNick()).addMessage(p);
 						chan.addMessage(p);
-					} else if (p.action.equals("CAP")) {
+					} else if (p.getAction().equals("CAP")) {
 						ircv3Support = true;
-						String capType = p.actionArgs.get(1);
+						String capType = p.getActionArgs().get(1);
 						if (capType.equals("LS")) {
-							ircv3Capabilities = p.msg.split(" ");
+							ircv3Capabilities = p.getMsg().split(" ");
 							String[] reqCpbs = { "multi-prefix" }; // Requested capabilities
 							for (String reqCpb : reqCpbs)
 								if (hasCapability(reqCpb))
@@ -181,61 +181,61 @@ public class Worker {
 							register(serverInfo.nick);
 						} else if (capType.equals("NAK"))
 							eventHandler.onEvent(
-									Event.IRCV3_CAPABILITY_REJECTED, p.msg);
+									Event.IRCV3_CAPABILITY_REJECTED, p.getMsg());
 						else if (capType.equals("ACK"))
 							eventHandler.onEvent(
-									Event.IRCV3_CAPABILITY_ACCEPTED, p.msg);
-					} else if (p.action.equals("JOIN")) { // Create new Channel
-						if (!chans.containsKey(p.msg))
-							chans.put(p.msg, new Channel(p.msg));
+									Event.IRCV3_CAPABILITY_ACCEPTED, p.getAction());
+					} else if (p.getAction().equals("JOIN")) { // Create new Channel
+						if (!chans.containsKey(p.getMsg()))
+							chans.put(p.getMsg(), new Channel(p.getMsg()));
 						else
-							chans.get(p.msg).rejoin();
-					} else if (p.action.equals("PART")) { // Remove channel (When not preserving them) or user in channel
-						if (p.nick
+							chans.get(p.getMsg()).rejoin();
+					} else if (p.getAction().equals("PART")) { // Remove channel (When not preserving them) or user in channel
+						if (p.getNick()
 								.equals(usingSecondNick ? serverInfo.secondNick
 										: serverInfo.nick)) {
 							eventHandler.onEvent(Event.LEFT_CHANNEL,
-									p.actionArgs.get(0));
-							chans.get(p.actionArgs.get(0)).leave();
+									p.getActionArgs().get(0));
+							chans.get(p.getActionArgs().get(0)).leave();
 							if (!preserveChannels)
-								chans.remove(p.actionArgs.get(0));
+								chans.remove(p.getActionArgs().get(0));
 						} else {
-							chans.get(p.actionArgs.get(0)).removeUser(p.nick);
+							chans.get(p.getActionArgs().get(0)).removeUser(p.getNick());
 						}
-					} else if (p.action.equals("KICK")) { // Remove channel (If not preserving them) or user in channel
-						if (p.actionArgs.get(1).equals(
+					} else if (p.getAction().equals("KICK")) { // Remove channel (If not preserving them) or user in channel
+						if (p.getActionArgs().get(1).equals(
 								usingSecondNick ? serverInfo.secondNick
 										: serverInfo.nick)) {
 							eventHandler.onEvent(Event.KICKED, p);
-							chans.get(p.actionArgs.get(0)).leave();
+							chans.get(p.getActionArgs().get(0)).leave();
 							if (!preserveChannels)
-								chans.remove(p.actionArgs.get(0));
+								chans.remove(p.getActionArgs().get(0));
 						} else {
-							chans.get(p.actionArgs.get(0)).removeUser(
-									p.actionArgs.get(1));
+							chans.get(p.getActionArgs().get(0)).removeUser(
+									p.getActionArgs().get(1));
 						}
-					} else if (p.action.equals("QUIT")) { // Remove user from all the channels
+					} else if (p.getAction().equals("QUIT")) { // Remove user from all the channels
 						for (Channel chan : chans.values()) {
-							chan.removeUser(p.nick);
+							chan.removeUser(p.getNick());
 						}
-					} else if (p.action.equals("TOPIC") && chans.containsKey(p.actionArgs.get(0))) { // Update topic upon change
-						chans.get(p.actionArgs.get(0)).setTopic(p.msg);
-					} else if (p.numberAction.equals("332") && chans.containsKey(p.actionArgs.get(1))) { // The topic sent upon join
-						chans.get(p.actionArgs.get(1)).setTopic(p.msg);
-					} else if (p.numberAction.equals("001")) { // Welcome to the server
-						eventHandler.onEvent(Event.CONNECTED, p.server);
+					} else if (p.getAction().equals("TOPIC") && chans.containsKey(p.getActionArgs().get(0))) { // Update topic upon change
+						chans.get(p.getActionArgs().get(0)).setTopic(p.getMsg());
+					} else if (p.getNumberAction().equals("332") && chans.containsKey(p.getActionArgs().get(1))) { // The topic sent upon join
+						chans.get(p.getActionArgs().get(1)).setTopic(p.getMsg());
+					} else if (p.getNumberAction().equals("001")) { // Welcome to the server
+						eventHandler.onEvent(Event.CONNECTED, p.getServer());
 						lagTimer.schedule(new LagPing(), 0, 30000);
-					} else if (p.numberAction.equals("421")
-							&& p.actionArgs.get(1).equals("CAP")) { // Unknown command CAP (i.e. the server doesn't support IRCv3)
+					} else if (p.getNumberAction().equals("421")
+							&& p.getActionArgs().get(1).equals("CAP")) { // Unknown command CAP (i.e. the server doesn't support IRCv3)
 						register(serverInfo.nick);
-					} else if (p.numberAction.equals("353")) { // NAMES response
-						if (chans.containsKey(p.actionArgs.get(2))) {
-							Channel chan = chans.get(p.actionArgs.get(2));
-							for (String user : p.msg.split(" "))
+					} else if (p.getNumberAction().equals("353")) { // NAMES response
+						if (chans.containsKey(p.getActionArgs().get(2))) {
+							Channel chan = chans.get(p.getActionArgs().get(2));
+							for (String user : p.getMsg().split(" "))
 								chan.addUser(user, prefixes);
 						}
-					} else if (p.numberAction.equals("005")) { // Server capabilities, sent upon connection
-						for (String spec : p.actionArgs) {
+					} else if (p.getNumberAction().equals("005")) { // Server capabilities, sent upon connection
+						for (String spec : p.getActionArgs()) {
 							String[] kvSplitter = spec.split("=", 2);
 							String key = kvSplitter[0].toUpperCase();
 							String value = kvSplitter.length == 2 ? kvSplitter[1]
@@ -254,17 +254,17 @@ public class Worker {
 										value);
 							}
 						}
-					} else if (p.numberAction.equals("375")) { // Start of MOTD
+					} else if (p.getNumberAction().equals("375")) { // Start of MOTD
 						motd = new StringBuilder();
-					} else if (p.numberAction.equals("372")) { // MOTD message
-						motd.append("\n" + p.msg);
-					} else if (p.numberAction.equals("376")) { // End of MOTD
+					} else if (p.getNumberAction().equals("372")) { // MOTD message
+						motd.append("\n" + p.getMsg());
+					} else if (p.getNumberAction().equals("376")) { // End of MOTD
 						motd.trimToSize();
 						eventHandler.onEvent(Event.GOT_MOTD, motd.toString()
 								.substring(1));
-					} else if (p.numberAction.equals("366")) { // Channel joined
-						eventHandler.onEvent(Event.JOINED_CHANNEL, p.actionArgs.get(1));
-					} else if (p.numberAction.equals("433")) { // Nickname in use
+					} else if (p.getNumberAction().equals("366")) { // Channel joined
+						eventHandler.onEvent(Event.JOINED_CHANNEL, p.getActionArgs().get(1));
+					} else if (p.getNumberAction().equals("433")) { // Nickname in use
 						if (!usingSecondNick) {
 							eventHandler.onEvent(Event.FIRST_NICK_IN_USE,
 									serverInfo.nick);

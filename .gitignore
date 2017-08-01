@@ -4,3 +4,6 @@
 # IntelliJ Related Files
 .idea/
 *.iml
+
+# Build files
+build/

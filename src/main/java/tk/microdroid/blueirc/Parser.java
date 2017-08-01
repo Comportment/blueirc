@@ -122,4 +122,60 @@ public class Parser {
 			failed = true;
 		}
 	}
+
+    public MessageType getType() {
+        return type;
+    }
+
+    public boolean isFailed() {
+        return failed;
+    }
+
+    public boolean isHasIdent() {
+        return hasIdent;
+    }
+
+    public String getRaw() {
+        return raw;
+    }
+
+    public String getServer() {
+        return server;
+    }
+
+    public String getNumberAction() {
+        return numberAction;
+    }
+
+    public String getNick() {
+        return nick;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public String getCmd() {
+        return cmd;
+    }
+
+    public List<String> getActionArgs() {
+        return actionArgs;
+    }
+
+    public List<String> getCmdArgs() {
+        return cmdArgs;
+    }
 }
