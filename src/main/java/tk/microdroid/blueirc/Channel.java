@@ -19,12 +19,12 @@ import java.util.regex.Pattern;
  */
 public class Channel {
 	static int bufferLength = Integer.MAX_VALUE;
-	private String name;
-	private ArrayList<Parser> messages = new ArrayList<Parser>();
+	private String name = "";
+	private ArrayList<Parser> messages = new ArrayList<>();
 	private HashMap<String, User> users = new HashMap<>();
 	private String topic = "";
-	private Date firstJoinDate;
-	private Date lastJoinDate;
+	private Date firstJoinDate = null;
+	private Date lastJoinDate = null;
 	private boolean hasLeft = false;
 	
 	Channel(String name) {
@@ -57,8 +57,9 @@ public class Channel {
 	 */
 	public void addMessage(Parser p) {
 		messages.add(p);
-		while (messages.size() > bufferLength)
+		while (messages.size() > bufferLength) {
 			messages.remove(0);
+		}
 	}
 	
 	/**
@@ -68,10 +69,7 @@ public class Channel {
 	 * @return Boolean, true if user is in channel, otherwise false
 	 */
 	public boolean hasUser(String nick) {
-		for (String n : users.keySet())
-			if (n.equals(nick))
-				return true;
-		return false;
+		return users.keySet().stream().anyMatch(usr -> usr.equalsIgnoreCase(nick));
 	}
 	
 	/**
@@ -157,18 +155,16 @@ public class Channel {
 	 * @param prefixes The prefixes supported by the server, parsed from 005
 	 */
 	void addUser(String nick, HashMap<Character, Character> prefixes) {
-		String prefixesStr = "";
-		for (Character key : prefixes.keySet())
-			prefixesStr += key;
-		Pattern pattern = Pattern.compile("([" + prefixesStr + "]*)(\\w.+)");
+		StringBuilder prefixesBuilder = new StringBuilder();
+		prefixes.keySet().forEach(prefixesBuilder::append);
+		Pattern pattern = Pattern.compile("([" + prefixesBuilder + "]*)(\\w.+)");
 		Matcher matcher = pattern.matcher(nick);
 		boolean matches = matcher.matches();
 		String prefix = matches ? matcher.group(1) : "";
 		String rawName = matches ? matcher.group(2) : nick;
-		for (Character c : prefixes.keySet())
-			if (prefixes.containsKey(c))
-				prefix.replace(c, prefixes.get(c));
-		
+		prefixes.keySet().forEach(c -> {
+			if (prefixes.containsKey(c)) prefix.replace(c, prefixes.get(c));
+		});
 		User user = new User(rawName, prefix);
 		users.put(rawName, user);
 	}
@@ -179,7 +175,6 @@ public class Channel {
 	 * @param nick The user nickname
 	 */
 	void removeUser(String nick) {
-		if (users.containsKey(nick))
-			users.remove(nick);
+		if (users.containsKey(nick)) users.remove(nick);
 	}
 }
