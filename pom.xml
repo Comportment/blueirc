@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+    Project package,
+    name,
+    version-->
+    <groupId>tk.microdroid</groupId>
+    <artifactId>BlueIRC</artifactId>
+    <version>0.0.1</version>
+
+    <!--
+    Sets variables which can be accessed from other parts of the pom.
+    - project source: 1.8
+    - project target: ^^
+    - source encoding: UTF-8
+    - target encoding: ^^
+    -->
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
+    </properties>
+
+    <!--
+    Build targets to be completed:
+    - including all resource files and output to /resources inside the packaged jar
+    - makes sure project is 1.8 [set above, but this is just incase]
+    - maven javadoc plugin- generates javadocs
+    -->
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <directory>${basedir}/build</directory>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <resources>
+            <resource>
+                <targetPath>${basedir}/resources</targetPath>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>*</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0-M1</version>
+            </plugin>
+        </plugins>
+
+    </build>
+
+    <!--
+    Where bugs and issues can be reported can be tracked
+    - name of the program used
+    - url of the program
+    -->
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/comportment/blueirc/issues</url>
+    </issueManagement>
+
+    <!--
+    Where target/source files of the project can be downloaded
+    - url of the location
+    -->
+    <distributionManagement>
+        <downloadUrl>https://github.com/Comportment/blueirc/releases</downloadUrl>
+    </distributionManagement>
+</project>
