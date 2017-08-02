@@ -10,7 +10,7 @@
     version-->
     <groupId>tk.microdroid</groupId>
     <artifactId>BlueIRC</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 
     <!--
     Sets variables which can be accessed from other parts of the pom.
